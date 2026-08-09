@@ -1,136 +1,138 @@
 # AGENTS.md
 
-## General Rules
+Этот файл — инструкция для ИИ-агента, работающего с бэкендом на NestJS.
+Агент обязан следовать этим правилам при чтении, генерации и рефакторинге кода.
 
-- Always inspect the existing code before making changes.
-- Follow existing project patterns and conventions.
-- Prefer simple solutions over complex ones.
-- Do not over-engineer.
-- Do not create abstractions without a clear need.
-- Do not refactor unrelated code.
-- Keep changes minimal and focused.
-- Do not change existing behavior unless explicitly requested.
+---
 
-## TypeScript
+## 0. Прежде чем что-либо писать
 
-- Use strict typing.
-- Avoid `any`.
-- Avoid unnecessary type assertions.
-- Reuse existing types instead of creating duplicates.
-- Prefer type inference when the type is obvious.
-- Keep types close to their usage when appropriate.
-- Don't use magic strings
+Перед выполнением любой задачи агент **обязан** сначала изучить текущую архитектуру проекта, а не писать код "с нуля" по шаблону из головы.
 
-## Code Quality
+Порядок действий:
 
-- Write readable and maintainable code.
-- Keep functions small and focused.
-- Avoid deeply nested logic.
-- Prefer early returns.
-- Avoid duplicated logic.
-- Remove unused code.
-- Do not leave dead code or commented-out old implementations.
+1. Просмотреть структуру `src/modules` — понять, какие модули уже есть и как они организованы.
+2. Открыть 2–3 похожих по смыслу модуля (например, если пишем новый CRUD-модуль — найти существующий CRUD-модуль) и изучить:
+   - как называются файлы (`*.module.ts`, `*.controller.ts`, `*.service.ts`, `*.dto.ts`, `*.entity.ts`, `*.enum.ts` и т.д.);
+   - как оформлены DTO и валидация (`class-validator` / `class-transformer`);
+   - как модуль импортируется в `AppModule` или в родительский модуль;
+   - как называются enum'ы ошибок и где они лежат.
+3. Только после этого приступать к реализации — новый код должен быть **неотличим по стилю** от существующего.
 
-## Project Consistency
+Если архитектура módуля неочевидна или в проекте есть противоречивые примеры — агент обязан явно указать это в ответе и выбрать наиболее свежий/распространённый паттерн, а не изобретать свой.
 
-- Match the existing code style.
-- Do not introduce new patterns without a reason.
-- Do not add unnecessary dependencies.
-- Do not change formatting manually.
-- Follow existing naming conventions.
+---
 
-## Error Handling
+## 1. Структура модулей
 
-- Handle errors explicitly.
-- Do not silently ignore errors.
-- Do not hide problems with workarounds.
-- Fix the root cause instead of adding temporary patches.
+Все бизнес-сущности живут в `src/modules/<module-name>/`.
 
-The API must always return errors in a unified format:
+Типичная структура одного модуля:
 
-```json
-{
-	"error_code": "SOME_ERROR"
+```
+src/modules/<module-name>/
+  ├── <module-name>.module.ts
+  ├── <module-name>.controller.ts
+  ├── <module-name>.service.ts
+  ├── dto/
+  │     ├── create-<module-name>.dto.ts
+  │     └── update-<module-name>.dto.ts
+  ├── entities/ (или schemas/, если ORM другой)
+  │     └── <module-name>.entity.ts
+  └── enums/
+        └── <module-name>-error.enum.ts
+```
+
+Правила:
+
+- Один модуль = одна бизнес-область. Не смешивать логику разных доменов в одном модуле.
+- Никакой бизнес-логики в контроллерах — контроллер только принимает запрос, валидирует вход (через DTO) и вызывает сервис.
+- Вся логика — в сервисах. Если сервис разрастается — выделять под-сервисы, а не раздувать один файл.
+- Общий (shared) код — в `src/common/` (guards, interceptors, decorators, filters, общие DTO и т.п.), а не копипастится по модулям.
+
+---
+
+## 2. Обработка ошибок
+
+### 2.1 Формат
+
+Все ошибки бросаются как стандартные исключения Nest (`UnauthorizedException`, `BadRequestException`, `NotFoundException`, `ForbiddenException`, `ConflictException` и т.д.) с телом вида:
+
+```typescript
+throw new UnauthorizedException({
+  error_code: AuthErrorCode.INVALID_TELEGRAM_ID_TOKEN,
+});
+```
+
+**Никогда** не бросать ошибку со свободным текстом вместо `error_code`, и не возвращать сырые объекты/строки в качестве ошибки.
+
+### 2.2 Enum'ы ошибок
+
+- Под каждый модуль заводится свой enum ошибок: `<Module>ErrorCode`, например `AuthErrorCode`, `UserErrorCode`, `PaymentErrorCode`.
+- Лежит в `src/modules/<module-name>/enums/<module-name>-error.enum.ts`.
+- Общие ошибки, не привязанные к конкретному модулю (например, `VALIDATION_ERROR`, `INTERNAL_ERROR`, `NOT_FOUND`), — в `CommonErrorCode` в `src/common/enums/common-error.enum.ts`.
+
+Пример enum'а:
+
+```typescript
+export enum AuthErrorCode {
+  INVALID_TELEGRAM_ID_TOKEN = 'INVALID_TELEGRAM_ID_TOKEN',
+  TOKEN_EXPIRED = 'TOKEN_EXPIRED',
+  USER_NOT_FOUND = 'USER_NOT_FOUND',
 }
 ```
 
-### Rules
+Правила по кодам ошибок:
 
-- Never expose validation details, stack traces, or internal exception messages.
-- DTO validation failures must always return:
-  ```json
-  {
-  	"error_code": "BAD_REQUEST"
-  }
-  ```
-- Field-level validation is the responsibility of the client. The server should not indicate which field is invalid or why.
-- Business logic errors should throw the appropriate application exception with the corresponding `error_code`.
-- If a specific error code already exists for the situation, use it instead of `BAD_REQUEST`.
-- Every error response must contain only the `error_code` field unless explicitly specified otherwise.
+- Значения enum'а — `SCREAMING_SNAKE_CASE`, совпадающие с именем ключа (чтобы в JSON было читаемо).
+- Перед добавлением нового кода ошибки — сначала проверить, нет ли уже подходящего в `CommonErrorCode` или в enum'е текущего модуля. Не плодить дубликаты с разными именами под одну и ту же ситуацию.
+- Один код ошибки = одна конкретная причина. Не использовать общий `SOMETHING_WENT_WRONG` там, где можно указать точную причину.
+- Использовать подходящий HTTP-статус (exception class) под тип ошибки: `NotFoundException` для "не найдено", `ConflictException` для конфликтов, `ForbiddenException` для запрета доступа и т.д. — не заворачивать всё в `BadRequestException`.
 
-### Example
+---
 
-```ts
-if (!user) {
-	throw new NotFoundException({
-		error_code: "USER_NOT_FOUND",
-	});
-}
+## 3. Формат успешного ответа
 
-if (!group) {
-	throw new NotFoundException({
-		error_code: "GROUP_NOT_FOUND",
-	});
-}
+Если хендлер по своей логике ничего не должен возвращать (например, `delete`, `logout`, `markAsRead` и т.п.), он должен вернуть:
+
+```typescript
+return { ok: true };
 ```
 
-DTO validation example:
+Не `void`, не `null`, не `undefined`, не пустой объект `{}`.
 
-```json
-{
-	"error_code": "BAD_REQUEST"
-}
-```
+Если хендлер что-то возвращает — возвращается сам DTO/сущность (или обёртка, принятая в проекте), а не `{ ok: true }` поверх данных.
 
-## Comments
+---
 
-- Avoid comments that only describe obvious code.
-- Add comments only when explaining non-obvious decisions or complex logic.
+## 4. Никакого хардкода
 
-## Changes
+- Никаких "магических" строк/чисел/id в коде — только именованные константы, enum'ы или значения из конфигурации (`ConfigService` / `.env`).
+- Никаких захардкоженных URL, токенов, ключей, ID пользователей/чатов и т.п.
+- Если значение может измениться в разных окружениях (dev/stage/prod) — оно обязано браться из конфигурации, а не быть вписанным в код.
+- Тексты сообщений для пользователя (если такие нужны сверх `error_code`) — через отдельный слой (i18n/constants), не инлайном в бизнес-логике.
 
-Before creating new code:
+---
 
-- Check if similar functionality already exists.
-- Reuse existing utilities and components when possible.
-- Place code in the appropriate location.
+## 5. Общие требования к качеству кода
 
-When modifying existing code:
+- Строго соответствовать существующему стилю проекта (naming, форматирование, порядок импортов) — смотреть на соседние файлы как на эталон.
+- Использовать типизацию TypeScript строго: никаких `any` без крайней необходимости, никаких `@ts-ignore`.
+- Валидация входных данных — через DTO + `class-validator`, не вручную в теле сервиса.
+- Не дублировать логику — если похожий код уже есть в другом модуле, выносить в `common` или в shared-сервис.
+- Именование:
+  - модули, сервисы, контроллеры — `PascalCase` классы, `kebab-case` файлы;
+  - enum ошибок — `<Module>ErrorCode`;
+  - DTO — `CreateXDto`, `UpdateXDto`, `XResponseDto`.
+- Каждое новое поведение по возможности сопровождать тестами, если в проекте уже есть тестовая инфраструктура (смотреть на существующие `*.spec.ts` как на образец).
 
-- Understand how the current implementation works first.
-- Avoid unnecessary rewrites.
-- Preserve existing behavior.
+---
 
-## Refactoring
+## 6. Чек-лист перед тем как отдать результат
 
-- Refactor only when it improves the current task.
-- Do not rewrite working code without a clear reason.
-- Do not optimize prematurely.
-
-## AI Behavior
-
-- Do not make assumptions about missing requirements.
-- Ask for clarification when the expected behavior is unclear.
-- Explain important architectural decisions before making large changes.
-- After changes, summarize what was modified.
-- Mention potential issues or things that need verification.
-
-## Priority
-
-The priority order is:
-
-1. Correctness
-2. Maintainability
-3. Simplicity
-4. Performance optimization
-5. Code style improvements
+- [ ] Я изучил существующие модули в `src/modules`, прежде чем писать код.
+- [ ] Ошибки брошены через `HttpException`-наследники с `{ error_code }`, где код взят из существующего или нового `<Module>ErrorCode`/`CommonErrorCode`.
+- [ ] Пустые ответы возвращают `{ ok: true }`.
+- [ ] В коде нет хардкода (строк, чисел, id, урлов, ключей).
+- [ ] Структура и стиль файлов соответствуют остальному проекту.
+- [ ] Новый enum ошибок (если создан) не дублирует уже существующие коды.

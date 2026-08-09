@@ -11,6 +11,7 @@ datasource db {
 model User {
   id                Int                @id @default(autoincrement())
   tg_id             Int                @unique
+  tg_sub            Int                @unique
   username          String             @unique
   name              String
   avatar            String?

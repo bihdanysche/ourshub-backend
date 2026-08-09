@@ -29,16 +29,19 @@ export type AggregateUser = {
 export type UserAvgAggregateOutputType = {
   id: number | null
   tg_id: number | null
+  tg_sub: number | null
 }
 
 export type UserSumAggregateOutputType = {
   id: number | null
   tg_id: number | null
+  tg_sub: number | null
 }
 
 export type UserMinAggregateOutputType = {
   id: number | null
   tg_id: number | null
+  tg_sub: number | null
   username: string | null
   name: string | null
   avatar: string | null
@@ -48,6 +51,7 @@ export type UserMinAggregateOutputType = {
 export type UserMaxAggregateOutputType = {
   id: number | null
   tg_id: number | null
+  tg_sub: number | null
   username: string | null
   name: string | null
   avatar: string | null
@@ -57,6 +61,7 @@ export type UserMaxAggregateOutputType = {
 export type UserCountAggregateOutputType = {
   id: number
   tg_id: number
+  tg_sub: number
   username: number
   name: number
   avatar: number
@@ -68,16 +73,19 @@ export type UserCountAggregateOutputType = {
 export type UserAvgAggregateInputType = {
   id?: true
   tg_id?: true
+  tg_sub?: true
 }
 
 export type UserSumAggregateInputType = {
   id?: true
   tg_id?: true
+  tg_sub?: true
 }
 
 export type UserMinAggregateInputType = {
   id?: true
   tg_id?: true
+  tg_sub?: true
   username?: true
   name?: true
   avatar?: true
@@ -87,6 +95,7 @@ export type UserMinAggregateInputType = {
 export type UserMaxAggregateInputType = {
   id?: true
   tg_id?: true
+  tg_sub?: true
   username?: true
   name?: true
   avatar?: true
@@ -96,6 +105,7 @@ export type UserMaxAggregateInputType = {
 export type UserCountAggregateInputType = {
   id?: true
   tg_id?: true
+  tg_sub?: true
   username?: true
   name?: true
   avatar?: true
@@ -192,6 +202,7 @@ export type UserGroupByArgs<ExtArgs extends runtime.Types.Extensions.InternalArg
 export type UserGroupByOutputType = {
   id: number
   tg_id: number
+  tg_sub: number
   username: string
   name: string
   avatar: string | null
@@ -224,6 +235,7 @@ export type UserWhereInput = {
   NOT?: Prisma.UserWhereInput | Prisma.UserWhereInput[]
   id?: Prisma.IntFilter<"User"> | number
   tg_id?: Prisma.IntFilter<"User"> | number
+  tg_sub?: Prisma.IntFilter<"User"> | number
   username?: Prisma.StringFilter<"User"> | string
   name?: Prisma.StringFilter<"User"> | string
   avatar?: Prisma.StringNullableFilter<"User"> | string | null
@@ -233,6 +245,7 @@ export type UserWhereInput = {
 export type UserOrderByWithRelationInput = {
   id?: Prisma.SortOrder
   tg_id?: Prisma.SortOrder
+  tg_sub?: Prisma.SortOrder
   username?: Prisma.SortOrder
   name?: Prisma.SortOrder
   avatar?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -242,6 +255,7 @@ export type UserOrderByWithRelationInput = {
 export type UserWhereUniqueInput = Prisma.AtLeast<{
   id?: number
   tg_id?: number
+  tg_sub?: number
   username?: string
   AND?: Prisma.UserWhereInput | Prisma.UserWhereInput[]
   OR?: Prisma.UserWhereInput[]
@@ -249,11 +263,12 @@ export type UserWhereUniqueInput = Prisma.AtLeast<{
   name?: Prisma.StringFilter<"User"> | string
   avatar?: Prisma.StringNullableFilter<"User"> | string | null
   createdAt?: Prisma.DateTimeFilter<"User"> | Date | string
-}, "id" | "tg_id" | "username">
+}, "id" | "tg_id" | "tg_sub" | "username">
 
 export type UserOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
   tg_id?: Prisma.SortOrder
+  tg_sub?: Prisma.SortOrder
   username?: Prisma.SortOrder
   name?: Prisma.SortOrder
   avatar?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -271,6 +286,7 @@ export type UserScalarWhereWithAggregatesInput = {
   NOT?: Prisma.UserScalarWhereWithAggregatesInput | Prisma.UserScalarWhereWithAggregatesInput[]
   id?: Prisma.IntWithAggregatesFilter<"User"> | number
   tg_id?: Prisma.IntWithAggregatesFilter<"User"> | number
+  tg_sub?: Prisma.IntWithAggregatesFilter<"User"> | number
   username?: Prisma.StringWithAggregatesFilter<"User"> | string
   name?: Prisma.StringWithAggregatesFilter<"User"> | string
   avatar?: Prisma.StringNullableWithAggregatesFilter<"User"> | string | null
@@ -279,6 +295,7 @@ export type UserScalarWhereWithAggregatesInput = {
 
 export type UserCreateInput = {
   tg_id: number
+  tg_sub: number
   username: string
   name: string
   avatar?: string | null
@@ -288,6 +305,7 @@ export type UserCreateInput = {
 export type UserUncheckedCreateInput = {
   id?: number
   tg_id: number
+  tg_sub: number
   username: string
   name: string
   avatar?: string | null
@@ -296,6 +314,7 @@ export type UserUncheckedCreateInput = {
 
 export type UserUpdateInput = {
   tg_id?: Prisma.IntFieldUpdateOperationsInput | number
+  tg_sub?: Prisma.IntFieldUpdateOperationsInput | number
   username?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   avatar?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -305,6 +324,7 @@ export type UserUpdateInput = {
 export type UserUncheckedUpdateInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
   tg_id?: Prisma.IntFieldUpdateOperationsInput | number
+  tg_sub?: Prisma.IntFieldUpdateOperationsInput | number
   username?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   avatar?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -314,6 +334,7 @@ export type UserUncheckedUpdateInput = {
 export type UserCreateManyInput = {
   id?: number
   tg_id: number
+  tg_sub: number
   username: string
   name: string
   avatar?: string | null
@@ -322,6 +343,7 @@ export type UserCreateManyInput = {
 
 export type UserUpdateManyMutationInput = {
   tg_id?: Prisma.IntFieldUpdateOperationsInput | number
+  tg_sub?: Prisma.IntFieldUpdateOperationsInput | number
   username?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   avatar?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -331,6 +353,7 @@ export type UserUpdateManyMutationInput = {
 export type UserUncheckedUpdateManyInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
   tg_id?: Prisma.IntFieldUpdateOperationsInput | number
+  tg_sub?: Prisma.IntFieldUpdateOperationsInput | number
   username?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   avatar?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -340,6 +363,7 @@ export type UserUncheckedUpdateManyInput = {
 export type UserCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
   tg_id?: Prisma.SortOrder
+  tg_sub?: Prisma.SortOrder
   username?: Prisma.SortOrder
   name?: Prisma.SortOrder
   avatar?: Prisma.SortOrder
@@ -349,11 +373,13 @@ export type UserCountOrderByAggregateInput = {
 export type UserAvgOrderByAggregateInput = {
   id?: Prisma.SortOrder
   tg_id?: Prisma.SortOrder
+  tg_sub?: Prisma.SortOrder
 }
 
 export type UserMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
   tg_id?: Prisma.SortOrder
+  tg_sub?: Prisma.SortOrder
   username?: Prisma.SortOrder
   name?: Prisma.SortOrder
   avatar?: Prisma.SortOrder
@@ -363,6 +389,7 @@ export type UserMaxOrderByAggregateInput = {
 export type UserMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
   tg_id?: Prisma.SortOrder
+  tg_sub?: Prisma.SortOrder
   username?: Prisma.SortOrder
   name?: Prisma.SortOrder
   avatar?: Prisma.SortOrder
@@ -372,6 +399,7 @@ export type UserMinOrderByAggregateInput = {
 export type UserSumOrderByAggregateInput = {
   id?: Prisma.SortOrder
   tg_id?: Prisma.SortOrder
+  tg_sub?: Prisma.SortOrder
 }
 
 export type IntFieldUpdateOperationsInput = {
@@ -399,6 +427,7 @@ export type DateTimeFieldUpdateOperationsInput = {
 export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   tg_id?: boolean
+  tg_sub?: boolean
   username?: boolean
   name?: boolean
   avatar?: boolean
@@ -408,6 +437,7 @@ export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
 export type UserSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   tg_id?: boolean
+  tg_sub?: boolean
   username?: boolean
   name?: boolean
   avatar?: boolean
@@ -417,6 +447,7 @@ export type UserSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensio
 export type UserSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   tg_id?: boolean
+  tg_sub?: boolean
   username?: boolean
   name?: boolean
   avatar?: boolean
@@ -426,13 +457,14 @@ export type UserSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensio
 export type UserSelectScalar = {
   id?: boolean
   tg_id?: boolean
+  tg_sub?: boolean
   username?: boolean
   name?: boolean
   avatar?: boolean
   createdAt?: boolean
 }
 
-export type UserOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "tg_id" | "username" | "name" | "avatar" | "createdAt", ExtArgs["result"]["user"]>
+export type UserOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "tg_id" | "tg_sub" | "username" | "name" | "avatar" | "createdAt", ExtArgs["result"]["user"]>
 
 export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "User"
@@ -440,6 +472,7 @@ export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: number
     tg_id: number
+    tg_sub: number
     username: string
     name: string
     avatar: string | null
@@ -869,6 +902,7 @@ export interface Prisma__UserClient<T, Null = never, ExtArgs extends runtime.Typ
 export interface UserFieldRefs {
   readonly id: Prisma.FieldRef<"User", 'Int'>
   readonly tg_id: Prisma.FieldRef<"User", 'Int'>
+  readonly tg_sub: Prisma.FieldRef<"User", 'Int'>
   readonly username: Prisma.FieldRef<"User", 'String'>
   readonly name: Prisma.FieldRef<"User", 'String'>
   readonly avatar: Prisma.FieldRef<"User", 'String'>
