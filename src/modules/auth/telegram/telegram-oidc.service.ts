@@ -12,9 +12,7 @@ export class TelegramOidcService {
   private readonly redirectUri = process.env.TG_REDIRECT_URI!;
 
   private readonly authorizationUrl = 'https://oauth.telegram.org/auth';
-
   private readonly tokenUrl = 'https://oauth.telegram.org/token';
-
   private readonly jwks = createRemoteJWKSet(
     new URL('https://oauth.telegram.org/.well-known/jwks.json'),
   );
@@ -24,7 +22,6 @@ export class TelegramOidcService {
     challenge: string;
   } {
     const verifier = randomBytes(32).toString('base64url');
-
     const challenge = createHash('sha256').update(verifier).digest('base64url');
 
     return {
@@ -42,11 +39,8 @@ export class TelegramOidcService {
       client_id: this.clientId,
       redirect_uri: this.redirectUri,
       response_type: 'code',
-
       scope: 'openid profile',
-
       state,
-
       code_challenge: challenge,
       code_challenge_method: 'S256',
     });
@@ -60,13 +54,9 @@ export class TelegramOidcService {
   ): Promise<TelegramTokenResponse> {
     const body = new URLSearchParams({
       grant_type: 'authorization_code',
-
       code,
-
       redirect_uri: this.redirectUri,
-
       client_id: this.clientId,
-
       code_verifier: verifier,
     });
 
@@ -76,12 +66,10 @@ export class TelegramOidcService {
 
     const response = await fetch(this.tokenUrl, {
       method: 'POST',
-
       headers: {
         Authorization: `Basic ${basicAuth}`,
         'Content-Type': 'application/x-www-form-urlencoded',
       },
-
       body,
     });
 
@@ -91,7 +79,8 @@ export class TelegramOidcService {
       });
     }
 
-    return response.json();
+    const data = (await response.json()) as TelegramTokenResponse;
+    return data;
   }
 
   async verifyIdToken(idToken: string): Promise<TelegramIdTokenClaims> {

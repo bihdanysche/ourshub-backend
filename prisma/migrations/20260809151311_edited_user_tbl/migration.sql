@@ -1,0 +1,3 @@
+-- AlterTable
+ALTER TABLE "User" ALTER COLUMN "tg_sub" SET DATA TYPE TEXT,
+ALTER COLUMN "username" DROP NOT NULL;
