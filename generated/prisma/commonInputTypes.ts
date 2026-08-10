@@ -137,6 +137,50 @@ export type DateTimeWithAggregatesFilter<$PrismaModel = never> = {
   _max?: Prisma.NestedDateTimeFilter<$PrismaModel>
 }
 
+export type EnumCrewMemberRoleFilter<$PrismaModel = never> = {
+  equals?: $Enums.CrewMemberRole | Prisma.EnumCrewMemberRoleFieldRefInput<$PrismaModel>
+  in?: $Enums.CrewMemberRole[] | Prisma.ListEnumCrewMemberRoleFieldRefInput<$PrismaModel>
+  notIn?: $Enums.CrewMemberRole[] | Prisma.ListEnumCrewMemberRoleFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumCrewMemberRoleFilter<$PrismaModel> | $Enums.CrewMemberRole
+}
+
+export type EnumCrewMemberRoleWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.CrewMemberRole | Prisma.EnumCrewMemberRoleFieldRefInput<$PrismaModel>
+  in?: $Enums.CrewMemberRole[] | Prisma.ListEnumCrewMemberRoleFieldRefInput<$PrismaModel>
+  notIn?: $Enums.CrewMemberRole[] | Prisma.ListEnumCrewMemberRoleFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumCrewMemberRoleWithAggregatesFilter<$PrismaModel> | $Enums.CrewMemberRole
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumCrewMemberRoleFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumCrewMemberRoleFilter<$PrismaModel>
+}
+
+export type UuidFilter<$PrismaModel = never> = {
+  equals?: string | Prisma.StringFieldRefInput<$PrismaModel>
+  in?: string[] | Prisma.ListStringFieldRefInput<$PrismaModel>
+  notIn?: string[] | Prisma.ListStringFieldRefInput<$PrismaModel>
+  lt?: string | Prisma.StringFieldRefInput<$PrismaModel>
+  lte?: string | Prisma.StringFieldRefInput<$PrismaModel>
+  gt?: string | Prisma.StringFieldRefInput<$PrismaModel>
+  gte?: string | Prisma.StringFieldRefInput<$PrismaModel>
+  mode?: Prisma.QueryMode
+  not?: Prisma.NestedUuidFilter<$PrismaModel> | string
+}
+
+export type UuidWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: string | Prisma.StringFieldRefInput<$PrismaModel>
+  in?: string[] | Prisma.ListStringFieldRefInput<$PrismaModel>
+  notIn?: string[] | Prisma.ListStringFieldRefInput<$PrismaModel>
+  lt?: string | Prisma.StringFieldRefInput<$PrismaModel>
+  lte?: string | Prisma.StringFieldRefInput<$PrismaModel>
+  gt?: string | Prisma.StringFieldRefInput<$PrismaModel>
+  gte?: string | Prisma.StringFieldRefInput<$PrismaModel>
+  mode?: Prisma.QueryMode
+  not?: Prisma.NestedUuidWithAggregatesFilter<$PrismaModel> | string
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedStringFilter<$PrismaModel>
+  _max?: Prisma.NestedStringFilter<$PrismaModel>
+}
+
 export type NestedIntFilter<$PrismaModel = never> = {
   equals?: number | Prisma.IntFieldRefInput<$PrismaModel>
   in?: number[] | Prisma.ListIntFieldRefInput<$PrismaModel>
@@ -271,6 +315,48 @@ export type NestedDateTimeWithAggregatesFilter<$PrismaModel = never> = {
   _count?: Prisma.NestedIntFilter<$PrismaModel>
   _min?: Prisma.NestedDateTimeFilter<$PrismaModel>
   _max?: Prisma.NestedDateTimeFilter<$PrismaModel>
+}
+
+export type NestedEnumCrewMemberRoleFilter<$PrismaModel = never> = {
+  equals?: $Enums.CrewMemberRole | Prisma.EnumCrewMemberRoleFieldRefInput<$PrismaModel>
+  in?: $Enums.CrewMemberRole[] | Prisma.ListEnumCrewMemberRoleFieldRefInput<$PrismaModel>
+  notIn?: $Enums.CrewMemberRole[] | Prisma.ListEnumCrewMemberRoleFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumCrewMemberRoleFilter<$PrismaModel> | $Enums.CrewMemberRole
+}
+
+export type NestedEnumCrewMemberRoleWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.CrewMemberRole | Prisma.EnumCrewMemberRoleFieldRefInput<$PrismaModel>
+  in?: $Enums.CrewMemberRole[] | Prisma.ListEnumCrewMemberRoleFieldRefInput<$PrismaModel>
+  notIn?: $Enums.CrewMemberRole[] | Prisma.ListEnumCrewMemberRoleFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumCrewMemberRoleWithAggregatesFilter<$PrismaModel> | $Enums.CrewMemberRole
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumCrewMemberRoleFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumCrewMemberRoleFilter<$PrismaModel>
+}
+
+export type NestedUuidFilter<$PrismaModel = never> = {
+  equals?: string | Prisma.StringFieldRefInput<$PrismaModel>
+  in?: string[] | Prisma.ListStringFieldRefInput<$PrismaModel>
+  notIn?: string[] | Prisma.ListStringFieldRefInput<$PrismaModel>
+  lt?: string | Prisma.StringFieldRefInput<$PrismaModel>
+  lte?: string | Prisma.StringFieldRefInput<$PrismaModel>
+  gt?: string | Prisma.StringFieldRefInput<$PrismaModel>
+  gte?: string | Prisma.StringFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedUuidFilter<$PrismaModel> | string
+}
+
+export type NestedUuidWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: string | Prisma.StringFieldRefInput<$PrismaModel>
+  in?: string[] | Prisma.ListStringFieldRefInput<$PrismaModel>
+  notIn?: string[] | Prisma.ListStringFieldRefInput<$PrismaModel>
+  lt?: string | Prisma.StringFieldRefInput<$PrismaModel>
+  lte?: string | Prisma.StringFieldRefInput<$PrismaModel>
+  gt?: string | Prisma.StringFieldRefInput<$PrismaModel>
+  gte?: string | Prisma.StringFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedUuidWithAggregatesFilter<$PrismaModel> | string
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedStringFilter<$PrismaModel>
+  _max?: Prisma.NestedStringFilter<$PrismaModel>
 }
 
 

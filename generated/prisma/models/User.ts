@@ -28,17 +28,15 @@ export type AggregateUser = {
 
 export type UserAvgAggregateOutputType = {
   id: number | null
-  tg_id: number | null
 }
 
 export type UserSumAggregateOutputType = {
   id: number | null
-  tg_id: number | null
 }
 
 export type UserMinAggregateOutputType = {
   id: number | null
-  tg_id: number | null
+  tg_id: string | null
   tg_sub: string | null
   username: string | null
   username_lower: string | null
@@ -49,7 +47,7 @@ export type UserMinAggregateOutputType = {
 
 export type UserMaxAggregateOutputType = {
   id: number | null
-  tg_id: number | null
+  tg_id: string | null
   tg_sub: string | null
   username: string | null
   username_lower: string | null
@@ -73,12 +71,10 @@ export type UserCountAggregateOutputType = {
 
 export type UserAvgAggregateInputType = {
   id?: true
-  tg_id?: true
 }
 
 export type UserSumAggregateInputType = {
   id?: true
-  tg_id?: true
 }
 
 export type UserMinAggregateInputType = {
@@ -203,7 +199,7 @@ export type UserGroupByArgs<ExtArgs extends runtime.Types.Extensions.InternalArg
 
 export type UserGroupByOutputType = {
   id: number
-  tg_id: number
+  tg_id: string
   tg_sub: string
   username: string | null
   username_lower: string | null
@@ -237,7 +233,7 @@ export type UserWhereInput = {
   OR?: Prisma.UserWhereInput[]
   NOT?: Prisma.UserWhereInput | Prisma.UserWhereInput[]
   id?: Prisma.IntFilter<"User"> | number
-  tg_id?: Prisma.IntFilter<"User"> | number
+  tg_id?: Prisma.StringFilter<"User"> | string
   tg_sub?: Prisma.StringFilter<"User"> | string
   username?: Prisma.StringNullableFilter<"User"> | string | null
   username_lower?: Prisma.StringNullableFilter<"User"> | string | null
@@ -245,6 +241,7 @@ export type UserWhereInput = {
   avatar?: Prisma.StringNullableFilter<"User"> | string | null
   createdAt?: Prisma.DateTimeFilter<"User"> | Date | string
   sessions?: Prisma.SessionListRelationFilter
+  crewMembers?: Prisma.CrewMemberListRelationFilter
 }
 
 export type UserOrderByWithRelationInput = {
@@ -257,11 +254,12 @@ export type UserOrderByWithRelationInput = {
   avatar?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   sessions?: Prisma.SessionOrderByRelationAggregateInput
+  crewMembers?: Prisma.CrewMemberOrderByRelationAggregateInput
 }
 
 export type UserWhereUniqueInput = Prisma.AtLeast<{
   id?: number
-  tg_id?: number
+  tg_id?: string
   tg_sub?: string
   username_lower?: string
   AND?: Prisma.UserWhereInput | Prisma.UserWhereInput[]
@@ -272,6 +270,7 @@ export type UserWhereUniqueInput = Prisma.AtLeast<{
   avatar?: Prisma.StringNullableFilter<"User"> | string | null
   createdAt?: Prisma.DateTimeFilter<"User"> | Date | string
   sessions?: Prisma.SessionListRelationFilter
+  crewMembers?: Prisma.CrewMemberListRelationFilter
 }, "id" | "tg_id" | "tg_sub" | "username_lower">
 
 export type UserOrderByWithAggregationInput = {
@@ -295,7 +294,7 @@ export type UserScalarWhereWithAggregatesInput = {
   OR?: Prisma.UserScalarWhereWithAggregatesInput[]
   NOT?: Prisma.UserScalarWhereWithAggregatesInput | Prisma.UserScalarWhereWithAggregatesInput[]
   id?: Prisma.IntWithAggregatesFilter<"User"> | number
-  tg_id?: Prisma.IntWithAggregatesFilter<"User"> | number
+  tg_id?: Prisma.StringWithAggregatesFilter<"User"> | string
   tg_sub?: Prisma.StringWithAggregatesFilter<"User"> | string
   username?: Prisma.StringNullableWithAggregatesFilter<"User"> | string | null
   username_lower?: Prisma.StringNullableWithAggregatesFilter<"User"> | string | null
@@ -305,7 +304,7 @@ export type UserScalarWhereWithAggregatesInput = {
 }
 
 export type UserCreateInput = {
-  tg_id: number
+  tg_id: string
   tg_sub: string
   username?: string | null
   username_lower?: string | null
@@ -313,11 +312,12 @@ export type UserCreateInput = {
   avatar?: string | null
   createdAt?: Date | string
   sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
+  crewMembers?: Prisma.CrewMemberCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateInput = {
   id?: number
-  tg_id: number
+  tg_id: string
   tg_sub: string
   username?: string | null
   username_lower?: string | null
@@ -325,10 +325,11 @@ export type UserUncheckedCreateInput = {
   avatar?: string | null
   createdAt?: Date | string
   sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
+  crewMembers?: Prisma.CrewMemberUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserUpdateInput = {
-  tg_id?: Prisma.IntFieldUpdateOperationsInput | number
+  tg_id?: Prisma.StringFieldUpdateOperationsInput | string
   tg_sub?: Prisma.StringFieldUpdateOperationsInput | string
   username?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   username_lower?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -336,11 +337,12 @@ export type UserUpdateInput = {
   avatar?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
+  crewMembers?: Prisma.CrewMemberUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
-  tg_id?: Prisma.IntFieldUpdateOperationsInput | number
+  tg_id?: Prisma.StringFieldUpdateOperationsInput | string
   tg_sub?: Prisma.StringFieldUpdateOperationsInput | string
   username?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   username_lower?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -348,11 +350,12 @@ export type UserUncheckedUpdateInput = {
   avatar?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
+  crewMembers?: Prisma.CrewMemberUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateManyInput = {
   id?: number
-  tg_id: number
+  tg_id: string
   tg_sub: string
   username?: string | null
   username_lower?: string | null
@@ -362,7 +365,7 @@ export type UserCreateManyInput = {
 }
 
 export type UserUpdateManyMutationInput = {
-  tg_id?: Prisma.IntFieldUpdateOperationsInput | number
+  tg_id?: Prisma.StringFieldUpdateOperationsInput | string
   tg_sub?: Prisma.StringFieldUpdateOperationsInput | string
   username?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   username_lower?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -373,7 +376,7 @@ export type UserUpdateManyMutationInput = {
 
 export type UserUncheckedUpdateManyInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
-  tg_id?: Prisma.IntFieldUpdateOperationsInput | number
+  tg_id?: Prisma.StringFieldUpdateOperationsInput | string
   tg_sub?: Prisma.StringFieldUpdateOperationsInput | string
   username?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   username_lower?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -395,7 +398,6 @@ export type UserCountOrderByAggregateInput = {
 
 export type UserAvgOrderByAggregateInput = {
   id?: Prisma.SortOrder
-  tg_id?: Prisma.SortOrder
 }
 
 export type UserMaxOrderByAggregateInput = {
@@ -422,20 +424,11 @@ export type UserMinOrderByAggregateInput = {
 
 export type UserSumOrderByAggregateInput = {
   id?: Prisma.SortOrder
-  tg_id?: Prisma.SortOrder
 }
 
 export type UserScalarRelationFilter = {
   is?: Prisma.UserWhereInput
   isNot?: Prisma.UserWhereInput
-}
-
-export type IntFieldUpdateOperationsInput = {
-  set?: number
-  increment?: number
-  decrement?: number
-  multiply?: number
-  divide?: number
 }
 
 export type StringFieldUpdateOperationsInput = {
@@ -448,6 +441,14 @@ export type NullableStringFieldUpdateOperationsInput = {
 
 export type DateTimeFieldUpdateOperationsInput = {
   set?: Date | string
+}
+
+export type IntFieldUpdateOperationsInput = {
+  set?: number
+  increment?: number
+  decrement?: number
+  multiply?: number
+  divide?: number
 }
 
 export type UserCreateNestedOneWithoutSessionsInput = {
@@ -464,25 +465,41 @@ export type UserUpdateOneRequiredWithoutSessionsNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutSessionsInput, Prisma.UserUpdateWithoutSessionsInput>, Prisma.UserUncheckedUpdateWithoutSessionsInput>
 }
 
+export type UserCreateNestedOneWithoutCrewMembersInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutCrewMembersInput, Prisma.UserUncheckedCreateWithoutCrewMembersInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutCrewMembersInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserUpdateOneRequiredWithoutCrewMembersNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutCrewMembersInput, Prisma.UserUncheckedCreateWithoutCrewMembersInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutCrewMembersInput
+  upsert?: Prisma.UserUpsertWithoutCrewMembersInput
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutCrewMembersInput, Prisma.UserUpdateWithoutCrewMembersInput>, Prisma.UserUncheckedUpdateWithoutCrewMembersInput>
+}
+
 export type UserCreateWithoutSessionsInput = {
-  tg_id: number
+  tg_id: string
   tg_sub: string
   username?: string | null
   username_lower?: string | null
   name: string
   avatar?: string | null
   createdAt?: Date | string
+  crewMembers?: Prisma.CrewMemberCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutSessionsInput = {
   id?: number
-  tg_id: number
+  tg_id: string
   tg_sub: string
   username?: string | null
   username_lower?: string | null
   name: string
   avatar?: string | null
   createdAt?: Date | string
+  crewMembers?: Prisma.CrewMemberUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutSessionsInput = {
@@ -502,24 +519,88 @@ export type UserUpdateToOneWithWhereWithoutSessionsInput = {
 }
 
 export type UserUpdateWithoutSessionsInput = {
-  tg_id?: Prisma.IntFieldUpdateOperationsInput | number
+  tg_id?: Prisma.StringFieldUpdateOperationsInput | string
   tg_sub?: Prisma.StringFieldUpdateOperationsInput | string
   username?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   username_lower?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   name?: Prisma.StringFieldUpdateOperationsInput | string
   avatar?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  crewMembers?: Prisma.CrewMemberUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutSessionsInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
-  tg_id?: Prisma.IntFieldUpdateOperationsInput | number
+  tg_id?: Prisma.StringFieldUpdateOperationsInput | string
   tg_sub?: Prisma.StringFieldUpdateOperationsInput | string
   username?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   username_lower?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   name?: Prisma.StringFieldUpdateOperationsInput | string
   avatar?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  crewMembers?: Prisma.CrewMemberUncheckedUpdateManyWithoutUserNestedInput
+}
+
+export type UserCreateWithoutCrewMembersInput = {
+  tg_id: string
+  tg_sub: string
+  username?: string | null
+  username_lower?: string | null
+  name: string
+  avatar?: string | null
+  createdAt?: Date | string
+  sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
+}
+
+export type UserUncheckedCreateWithoutCrewMembersInput = {
+  id?: number
+  tg_id: string
+  tg_sub: string
+  username?: string | null
+  username_lower?: string | null
+  name: string
+  avatar?: string | null
+  createdAt?: Date | string
+  sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
+}
+
+export type UserCreateOrConnectWithoutCrewMembersInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutCrewMembersInput, Prisma.UserUncheckedCreateWithoutCrewMembersInput>
+}
+
+export type UserUpsertWithoutCrewMembersInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutCrewMembersInput, Prisma.UserUncheckedUpdateWithoutCrewMembersInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutCrewMembersInput, Prisma.UserUncheckedCreateWithoutCrewMembersInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutCrewMembersInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutCrewMembersInput, Prisma.UserUncheckedUpdateWithoutCrewMembersInput>
+}
+
+export type UserUpdateWithoutCrewMembersInput = {
+  tg_id?: Prisma.StringFieldUpdateOperationsInput | string
+  tg_sub?: Prisma.StringFieldUpdateOperationsInput | string
+  username?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  username_lower?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  avatar?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
+}
+
+export type UserUncheckedUpdateWithoutCrewMembersInput = {
+  id?: Prisma.IntFieldUpdateOperationsInput | number
+  tg_id?: Prisma.StringFieldUpdateOperationsInput | string
+  tg_sub?: Prisma.StringFieldUpdateOperationsInput | string
+  username?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  username_lower?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  avatar?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
 }
 
 
@@ -529,10 +610,12 @@ export type UserUncheckedUpdateWithoutSessionsInput = {
 
 export type UserCountOutputType = {
   sessions: number
+  crewMembers: number
 }
 
 export type UserCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   sessions?: boolean | UserCountOutputTypeCountSessionsArgs
+  crewMembers?: boolean | UserCountOutputTypeCountCrewMembersArgs
 }
 
 /**
@@ -552,6 +635,13 @@ export type UserCountOutputTypeCountSessionsArgs<ExtArgs extends runtime.Types.E
   where?: Prisma.SessionWhereInput
 }
 
+/**
+ * UserCountOutputType without action
+ */
+export type UserCountOutputTypeCountCrewMembersArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.CrewMemberWhereInput
+}
+
 
 export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -563,6 +653,7 @@ export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   avatar?: boolean
   createdAt?: boolean
   sessions?: boolean | Prisma.User$sessionsArgs<ExtArgs>
+  crewMembers?: boolean | Prisma.User$crewMembersArgs<ExtArgs>
   _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["user"]>
 
@@ -602,6 +693,7 @@ export type UserSelectScalar = {
 export type UserOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "tg_id" | "tg_sub" | "username" | "username_lower" | "name" | "avatar" | "createdAt", ExtArgs["result"]["user"]>
 export type UserInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   sessions?: boolean | Prisma.User$sessionsArgs<ExtArgs>
+  crewMembers?: boolean | Prisma.User$crewMembersArgs<ExtArgs>
   _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type UserIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
@@ -611,10 +703,11 @@ export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
   name: "User"
   objects: {
     sessions: Prisma.$SessionPayload<ExtArgs>[]
+    crewMembers: Prisma.$CrewMemberPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: number
-    tg_id: number
+    tg_id: string
     tg_sub: string
     username: string | null
     username_lower: string | null
@@ -1016,6 +1109,7 @@ readonly fields: UserFieldRefs;
 export interface Prisma__UserClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
   sessions<T extends Prisma.User$sessionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$sessionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$SessionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  crewMembers<T extends Prisma.User$crewMembersArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$crewMembersArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$CrewMemberPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1046,7 +1140,7 @@ export interface Prisma__UserClient<T, Null = never, ExtArgs extends runtime.Typ
  */
 export interface UserFieldRefs {
   readonly id: Prisma.FieldRef<"User", 'Int'>
-  readonly tg_id: Prisma.FieldRef<"User", 'Int'>
+  readonly tg_id: Prisma.FieldRef<"User", 'String'>
   readonly tg_sub: Prisma.FieldRef<"User", 'String'>
   readonly username: Prisma.FieldRef<"User", 'String'>
   readonly username_lower: Prisma.FieldRef<"User", 'String'>
@@ -1467,6 +1561,30 @@ export type User$sessionsArgs<ExtArgs extends runtime.Types.Extensions.InternalA
   take?: number
   skip?: number
   distinct?: Prisma.SessionScalarFieldEnum | Prisma.SessionScalarFieldEnum[]
+}
+
+/**
+ * User.crewMembers
+ */
+export type User$crewMembersArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the CrewMember
+   */
+  select?: Prisma.CrewMemberSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the CrewMember
+   */
+  omit?: Prisma.CrewMemberOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.CrewMemberInclude<ExtArgs> | null
+  where?: Prisma.CrewMemberWhereInput
+  orderBy?: Prisma.CrewMemberOrderByWithRelationInput | Prisma.CrewMemberOrderByWithRelationInput[]
+  cursor?: Prisma.CrewMemberWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.CrewMemberScalarFieldEnum | Prisma.CrewMemberScalarFieldEnum[]
 }
 
 /**

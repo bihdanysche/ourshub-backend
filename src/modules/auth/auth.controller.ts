@@ -23,8 +23,12 @@ export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
   @Get('telegram')
-  async authViaTelegram(@Req() req: Request, @Res() res: Response) {
-    return await this.authService.loginViaTelegram(req, res);
+  async authViaTelegram(
+    @Req() req: Request,
+    @Res() res: Response,
+    @Query('inv_code') inv_code?: string,
+  ) {
+    return await this.authService.loginViaTelegram(req, res, inv_code);
   }
 
   @Get('telegram/callback')
@@ -46,10 +50,7 @@ export class AuthController {
   }
 
   @Post('logout')
-  async logout(
-    @Req() req: Request,
-    @Res({ passthrough: true }) res: Response,
-  ) {
+  async logout(@Req() req: Request, @Res({ passthrough: true }) res: Response) {
     return await this.authService.logout(req, res);
   }
 

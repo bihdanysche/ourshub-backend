@@ -8,17 +8,25 @@ datasource db {
   provider = "postgresql"
 }
 
+enum CrewMemberRole {
+  OWNER
+  MEMBER
+
+  @@map("crew_member_roles")
+}
+
 model User {
-  id             Int       @id @default(autoincrement())
-  tg_id          Int       @unique
-  tg_sub         String    @unique
+  id             Int          @id @default(autoincrement())
+  tg_id          String       @unique
+  tg_sub         String       @unique
   username       String?
-  username_lower String?   @unique
+  username_lower String?      @unique
   name           String
   avatar         String?
-  createdAt      DateTime  @default(now())
+  createdAt      DateTime     @default(now())
 
   sessions       Session[]
+  crewMembers    CrewMember[]
 }
 
 model Session {
@@ -34,4 +42,46 @@ model Session {
   user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId])
+}
+
+model Crew {
+  id             Int                 @id @default(autoincrement())
+  title          String
+  avatar         String?
+  cover          String?
+  createdAt      DateTime            @default(now()) @map("created_at")
+  updatedAt      DateTime            @updatedAt @map("updated_at")
+
+  members        CrewMember[]
+  invitationLink CrewInvitationLink?
+
+  @@map("crews")
+}
+
+model CrewMember {
+  id        Int            @id @default(autoincrement())
+  crewId    Int            @map("crew_id")
+  userId    Int            @map("user_id")
+  role      CrewMemberRole @default(MEMBER)
+  alias     String?
+  joinedAt  DateTime       @default(now()) @map("joined_at")
+
+  crew      Crew           @relation(fields: [crewId], references: [id], onDelete: Cascade)
+  user      User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([crewId, userId])
+  @@index([userId])
+  @@index([crewId])
+  @@map("crew_members")
+}
+
+model CrewInvitationLink {
+  id         Int      @id @default(autoincrement())
+  crewId     Int      @unique @map("crew_id")
+  inviteCode String   @unique @default(uuid()) @map("invite_code") @db.Uuid
+  createdAt  DateTime @default(now()) @map("created_at")
+
+  crew       Crew     @relation(fields: [crewId], references: [id], onDelete: Cascade)
+
+  @@map("crew_invitation_links")
 }

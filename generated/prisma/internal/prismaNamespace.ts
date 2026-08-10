@@ -398,7 +398,10 @@ type FieldRefInputType<Model, FieldType> = Model extends never ? never : FieldRe
 
 export const ModelName = {
   User: 'User',
-  Session: 'Session'
+  Session: 'Session',
+  Crew: 'Crew',
+  CrewMember: 'CrewMember',
+  CrewInvitationLink: 'CrewInvitationLink'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -414,7 +417,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "user" | "session"
+    modelProps: "user" | "session" | "crew" | "crewMember" | "crewInvitationLink"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -566,6 +569,228 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    Crew: {
+      payload: Prisma.$CrewPayload<ExtArgs>
+      fields: Prisma.CrewFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.CrewFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CrewPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.CrewFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CrewPayload>
+        }
+        findFirst: {
+          args: Prisma.CrewFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CrewPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.CrewFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CrewPayload>
+        }
+        findMany: {
+          args: Prisma.CrewFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CrewPayload>[]
+        }
+        create: {
+          args: Prisma.CrewCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CrewPayload>
+        }
+        createMany: {
+          args: Prisma.CrewCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.CrewCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CrewPayload>[]
+        }
+        delete: {
+          args: Prisma.CrewDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CrewPayload>
+        }
+        update: {
+          args: Prisma.CrewUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CrewPayload>
+        }
+        deleteMany: {
+          args: Prisma.CrewDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.CrewUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.CrewUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CrewPayload>[]
+        }
+        upsert: {
+          args: Prisma.CrewUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CrewPayload>
+        }
+        aggregate: {
+          args: Prisma.CrewAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateCrew>
+        }
+        groupBy: {
+          args: Prisma.CrewGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.CrewGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.CrewCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.CrewCountAggregateOutputType> | number
+        }
+      }
+    }
+    CrewMember: {
+      payload: Prisma.$CrewMemberPayload<ExtArgs>
+      fields: Prisma.CrewMemberFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.CrewMemberFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CrewMemberPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.CrewMemberFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CrewMemberPayload>
+        }
+        findFirst: {
+          args: Prisma.CrewMemberFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CrewMemberPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.CrewMemberFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CrewMemberPayload>
+        }
+        findMany: {
+          args: Prisma.CrewMemberFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CrewMemberPayload>[]
+        }
+        create: {
+          args: Prisma.CrewMemberCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CrewMemberPayload>
+        }
+        createMany: {
+          args: Prisma.CrewMemberCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.CrewMemberCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CrewMemberPayload>[]
+        }
+        delete: {
+          args: Prisma.CrewMemberDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CrewMemberPayload>
+        }
+        update: {
+          args: Prisma.CrewMemberUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CrewMemberPayload>
+        }
+        deleteMany: {
+          args: Prisma.CrewMemberDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.CrewMemberUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.CrewMemberUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CrewMemberPayload>[]
+        }
+        upsert: {
+          args: Prisma.CrewMemberUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CrewMemberPayload>
+        }
+        aggregate: {
+          args: Prisma.CrewMemberAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateCrewMember>
+        }
+        groupBy: {
+          args: Prisma.CrewMemberGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.CrewMemberGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.CrewMemberCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.CrewMemberCountAggregateOutputType> | number
+        }
+      }
+    }
+    CrewInvitationLink: {
+      payload: Prisma.$CrewInvitationLinkPayload<ExtArgs>
+      fields: Prisma.CrewInvitationLinkFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.CrewInvitationLinkFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CrewInvitationLinkPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.CrewInvitationLinkFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CrewInvitationLinkPayload>
+        }
+        findFirst: {
+          args: Prisma.CrewInvitationLinkFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CrewInvitationLinkPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.CrewInvitationLinkFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CrewInvitationLinkPayload>
+        }
+        findMany: {
+          args: Prisma.CrewInvitationLinkFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CrewInvitationLinkPayload>[]
+        }
+        create: {
+          args: Prisma.CrewInvitationLinkCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CrewInvitationLinkPayload>
+        }
+        createMany: {
+          args: Prisma.CrewInvitationLinkCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.CrewInvitationLinkCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CrewInvitationLinkPayload>[]
+        }
+        delete: {
+          args: Prisma.CrewInvitationLinkDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CrewInvitationLinkPayload>
+        }
+        update: {
+          args: Prisma.CrewInvitationLinkUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CrewInvitationLinkPayload>
+        }
+        deleteMany: {
+          args: Prisma.CrewInvitationLinkDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.CrewInvitationLinkUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.CrewInvitationLinkUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CrewInvitationLinkPayload>[]
+        }
+        upsert: {
+          args: Prisma.CrewInvitationLinkUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CrewInvitationLinkPayload>
+        }
+        aggregate: {
+          args: Prisma.CrewInvitationLinkAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateCrewInvitationLink>
+        }
+        groupBy: {
+          args: Prisma.CrewInvitationLinkGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.CrewInvitationLinkGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.CrewInvitationLinkCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.CrewInvitationLinkCountAggregateOutputType> | number
+        }
+      }
+    }
   }
 } & {
   other: {
@@ -631,6 +856,40 @@ export const SessionScalarFieldEnum = {
 } as const
 
 export type SessionScalarFieldEnum = (typeof SessionScalarFieldEnum)[keyof typeof SessionScalarFieldEnum]
+
+
+export const CrewScalarFieldEnum = {
+  id: 'id',
+  title: 'title',
+  avatar: 'avatar',
+  cover: 'cover',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type CrewScalarFieldEnum = (typeof CrewScalarFieldEnum)[keyof typeof CrewScalarFieldEnum]
+
+
+export const CrewMemberScalarFieldEnum = {
+  id: 'id',
+  crewId: 'crewId',
+  userId: 'userId',
+  role: 'role',
+  alias: 'alias',
+  joinedAt: 'joinedAt'
+} as const
+
+export type CrewMemberScalarFieldEnum = (typeof CrewMemberScalarFieldEnum)[keyof typeof CrewMemberScalarFieldEnum]
+
+
+export const CrewInvitationLinkScalarFieldEnum = {
+  id: 'id',
+  crewId: 'crewId',
+  inviteCode: 'inviteCode',
+  createdAt: 'createdAt'
+} as const
+
+export type CrewInvitationLinkScalarFieldEnum = (typeof CrewInvitationLinkScalarFieldEnum)[keyof typeof CrewInvitationLinkScalarFieldEnum]
 
 
 export const SortOrder = {
@@ -702,6 +961,20 @@ export type DateTimeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel
  * Reference to a field of type 'DateTime[]'
  */
 export type ListDateTimeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'DateTime[]'>
+    
+
+
+/**
+ * Reference to a field of type 'CrewMemberRole'
+ */
+export type EnumCrewMemberRoleFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'CrewMemberRole'>
+    
+
+
+/**
+ * Reference to a field of type 'CrewMemberRole[]'
+ */
+export type ListEnumCrewMemberRoleFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'CrewMemberRole[]'>
     
 
 
@@ -871,6 +1144,9 @@ export type PrismaClientOptions = PrismaClientOptionsWithAccelerateUrl | PrismaC
 export type GlobalOmitConfig = {
   user?: Prisma.UserOmit
   session?: Prisma.SessionOmit
+  crew?: Prisma.CrewOmit
+  crewMember?: Prisma.CrewMemberOmit
+  crewInvitationLink?: Prisma.CrewInvitationLinkOmit
 }
 
 /* Types for Logging */

@@ -12,6 +12,7 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import {
   ACCESS_TOKEN_COOKIE,
   ACCESS_TOKEN_TTL_SECONDS,
+  OAUTH_INV_CODE,
   REFRESH_TOKEN_COOKIE,
   REFRESH_TOKEN_TTL_MS,
   REFRESH_TOKEN_TTL_SECONDS,
@@ -47,7 +48,7 @@ export class AuthService {
     private readonly geoIpService: GeoIpService,
   ) {}
 
-  async loginViaTelegram(req: Request, res: Response) {
+  async loginViaTelegram(req: Request, res: Response, inv_code?: string) {
     const accessToken = getCookie(req, ACCESS_TOKEN_COOKIE);
     if (await this.isSessionActive(accessToken)) {
       return this.redirectToFrontend(res, {
@@ -66,7 +67,7 @@ export class AuthService {
     const state = this.telegram.generateState();
     const { verifier, challenge } = this.telegram.generatePkce();
 
-    setOidcCookies(res, state, verifier);
+    setOidcCookies(res, state, verifier, inv_code);
 
     const url = this.telegram.getAuthorizationUrl(state, challenge);
     return res.redirect(url);
@@ -80,22 +81,26 @@ export class AuthService {
   ) {
     const storedState = getCookie(req, TG_OAUTH_STATE_COOKIE);
     const verifier = getCookie(req, TG_OAUTH_VERIFIER_COOKIE);
+    const inv_code = getCookie(req, OAUTH_INV_CODE);
 
     if (!code || !state) {
       return this.redirectToFrontend(res, {
         error: CommonErrorCode.UNAUTHORIZED,
+        inv_code,
       });
     }
 
     if (!storedState || !verifier) {
       return this.redirectToFrontend(res, {
         error: AuthErrorCode.TG_AUTH_EXPIRED,
+        inv_code,
       });
     }
 
     if (state !== storedState) {
       return this.redirectToFrontend(res, {
         error: AuthErrorCode.INVALID_OAUTH_STATE,
+        inv_code,
       });
     }
 
@@ -106,15 +111,15 @@ export class AuthService {
       await this.loginByTelegramClaim(claims, req, res);
 
       clearOidcCookies(res);
-      return this.redirectToFrontend(res, { success: true });
+      return this.redirectToFrontend(res, { success: true, inv_code });
     } catch (err) {
-      // console.log(err);
+      console.log(err);
       clearOidcCookies(res);
       const errorCode = extractErrorCode(
         err,
         AuthErrorCode.TELEGRAM_AUTH_FAILED,
       );
-      return this.redirectToFrontend(res, { error: errorCode });
+      return this.redirectToFrontend(res, { error: errorCode, inv_code });
     }
   }
 
@@ -146,7 +151,7 @@ export class AuthService {
       user = await this.prisma.user.create({
         data: {
           tg_sub: claims.sub,
-          tg_id: Number(claims.id),
+          tg_id: String(claims.id),
           name: claims.name,
           avatar: claims.picture ?? null,
           username,
@@ -375,12 +380,15 @@ export class AuthService {
 
   private redirectToFrontend(
     res: Response,
-    result: { success: true } | { error: string },
+    result: ({ success: true } | { error: string }) & { inv_code?: string },
   ) {
+    const origin = result.inv_code
+      ? `${process.env.FRONTEND_URI!}/join-crew/${result.inv_code}`
+      : process.env.FRONTEND_URI!;
     const url =
       'error' in result
-        ? `${process.env.FRONTEND_URI!}/?auth=error&code=${result.error}`
-        : `${process.env.FRONTEND_URI!}/?auth=success`;
+        ? `${origin}/?auth=error&code=${result.error}`
+        : `${origin}/?auth=success`;
     return res.redirect(url);
   }
 

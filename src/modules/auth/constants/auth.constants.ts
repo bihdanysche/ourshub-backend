@@ -2,6 +2,7 @@ export const ACCESS_TOKEN_COOKIE = 'access_token';
 export const REFRESH_TOKEN_COOKIE = 'refresh_token';
 export const TG_OAUTH_STATE_COOKIE = 'telegram_oauth_state';
 export const TG_OAUTH_VERIFIER_COOKIE = 'telegram_oauth_verifier';
+export const OAUTH_INV_CODE = 'oauth_inv_code';
 
 export const ACCESS_TOKEN_TTL_MS = 10 * 60 * 1000; // 10 minutes
 export const ACCESS_TOKEN_TTL_SECONDS = 10 * 60;

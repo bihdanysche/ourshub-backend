@@ -1,6 +1,7 @@
 import type { Request, Response } from 'express';
 import {
   ACCESS_TOKEN_COOKIE,
+  OAUTH_INV_CODE,
   REFRESH_TOKEN_COOKIE,
   REFRESH_TOKEN_TTL_MS,
   TG_OAUTH_STATE_COOKIE,
@@ -53,6 +54,7 @@ export function setOidcCookies(
   res: Response,
   state: string,
   verifier: string,
+  inv_code?: string,
 ): void {
   const options = {
     httpOnly: true,
@@ -64,6 +66,11 @@ export function setOidcCookies(
 
   res.cookie(TG_OAUTH_STATE_COOKIE, state, options);
   res.cookie(TG_OAUTH_VERIFIER_COOKIE, verifier, options);
+  if (inv_code) {
+    res.cookie(OAUTH_INV_CODE, inv_code, options);
+  } else {
+    res.clearCookie(OAUTH_INV_CODE, { ...options, maxAge: undefined });
+  }
 }
 
 export function clearOidcCookies(res: Response): void {
@@ -76,4 +83,5 @@ export function clearOidcCookies(res: Response): void {
 
   res.clearCookie(TG_OAUTH_STATE_COOKIE, options);
   res.clearCookie(TG_OAUTH_VERIFIER_COOKIE, options);
+  res.clearCookie(OAUTH_INV_CODE, options);
 }

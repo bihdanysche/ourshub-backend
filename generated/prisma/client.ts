@@ -49,3 +49,18 @@ export type User = Prisma.UserModel
  * 
  */
 export type Session = Prisma.SessionModel
+/**
+ * Model Crew
+ * 
+ */
+export type Crew = Prisma.CrewModel
+/**
+ * Model CrewMember
+ * 
+ */
+export type CrewMember = Prisma.CrewMemberModel
+/**
+ * Model CrewInvitationLink
+ * 
+ */
+export type CrewInvitationLink = Prisma.CrewInvitationLinkModel

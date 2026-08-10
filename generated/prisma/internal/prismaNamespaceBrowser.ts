@@ -52,7 +52,10 @@ export const AnyNull = runtime.AnyNull
 
 export const ModelName = {
   User: 'User',
-  Session: 'Session'
+  Session: 'Session',
+  Crew: 'Crew',
+  CrewMember: 'CrewMember',
+  CrewInvitationLink: 'CrewInvitationLink'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -97,6 +100,40 @@ export const SessionScalarFieldEnum = {
 } as const
 
 export type SessionScalarFieldEnum = (typeof SessionScalarFieldEnum)[keyof typeof SessionScalarFieldEnum]
+
+
+export const CrewScalarFieldEnum = {
+  id: 'id',
+  title: 'title',
+  avatar: 'avatar',
+  cover: 'cover',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type CrewScalarFieldEnum = (typeof CrewScalarFieldEnum)[keyof typeof CrewScalarFieldEnum]
+
+
+export const CrewMemberScalarFieldEnum = {
+  id: 'id',
+  crewId: 'crewId',
+  userId: 'userId',
+  role: 'role',
+  alias: 'alias',
+  joinedAt: 'joinedAt'
+} as const
+
+export type CrewMemberScalarFieldEnum = (typeof CrewMemberScalarFieldEnum)[keyof typeof CrewMemberScalarFieldEnum]
+
+
+export const CrewInvitationLinkScalarFieldEnum = {
+  id: 'id',
+  crewId: 'crewId',
+  inviteCode: 'inviteCode',
+  createdAt: 'createdAt'
+} as const
+
+export type CrewInvitationLinkScalarFieldEnum = (typeof CrewInvitationLinkScalarFieldEnum)[keyof typeof CrewInvitationLinkScalarFieldEnum]
 
 
 export const SortOrder = {
