@@ -5,6 +5,7 @@ import { AuthModule } from './modules/auth/auth.module';
 import { CrewsModule } from './modules/crews/crews.module';
 import { HealthModule } from './modules/health/health.module';
 import { MeModule } from './modules/me/me.module';
+import { PostsModule } from './modules/posts/posts.module';
 import { PrismaModule } from './prisma/prisma.module';
 
 @Module({
@@ -23,6 +24,7 @@ import { PrismaModule } from './prisma/prisma.module';
     AuthModule,
     MeModule,
     CrewsModule,
+    PostsModule,
   ],
 })
 export class AppModule {}

@@ -42,3 +42,8 @@ export type CrewMember = Prisma.CrewMemberModel
  * 
  */
 export type CrewInvitationLink = Prisma.CrewInvitationLinkModel
+/**
+ * Model Post
+ * 
+ */
+export type Post = Prisma.PostModel

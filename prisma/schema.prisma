@@ -27,6 +27,7 @@ model User {
 
   sessions       Session[]
   crewMembers    CrewMember[]
+  posts          Post[]
 }
 
 model Session {
@@ -54,6 +55,7 @@ model Crew {
 
   members        CrewMember[]
   invitationLink CrewInvitationLink?
+  posts          Post[]
 
   @@map("crews")
 }
@@ -84,4 +86,20 @@ model CrewInvitationLink {
   crew       Crew     @relation(fields: [crewId], references: [id], onDelete: Cascade)
 
   @@map("crew_invitation_links")
+}
+
+model Post {
+  id        Int      @id @default(autoincrement())
+  authorId  Int      @map("author_id")
+  crewId    Int      @map("crew_id")
+  content   String
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  author    User     @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  crew      Crew     @relation(fields: [crewId], references: [id], onDelete: Cascade)
+
+  @@index([crewId])
+  @@index([authorId])
+  @@map("posts")
 }

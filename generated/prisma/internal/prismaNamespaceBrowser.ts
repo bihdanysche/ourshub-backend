@@ -55,7 +55,8 @@ export const ModelName = {
   Session: 'Session',
   Crew: 'Crew',
   CrewMember: 'CrewMember',
-  CrewInvitationLink: 'CrewInvitationLink'
+  CrewInvitationLink: 'CrewInvitationLink',
+  Post: 'Post'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -134,6 +135,18 @@ export const CrewInvitationLinkScalarFieldEnum = {
 } as const
 
 export type CrewInvitationLinkScalarFieldEnum = (typeof CrewInvitationLinkScalarFieldEnum)[keyof typeof CrewInvitationLinkScalarFieldEnum]
+
+
+export const PostScalarFieldEnum = {
+  id: 'id',
+  authorId: 'authorId',
+  crewId: 'crewId',
+  content: 'content',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type PostScalarFieldEnum = (typeof PostScalarFieldEnum)[keyof typeof PostScalarFieldEnum]
 
 
 export const SortOrder = {

@@ -147,7 +147,7 @@ describe('AuthService', () => {
       expect(prisma.user.create).toHaveBeenCalledWith({
         data: {
           tg_sub: claims.sub,
-          tg_id: claims.id,
+          tg_id: String(claims.id),
           name: claims.name,
           avatar: claims.picture,
           username: claims.preferred_username,
