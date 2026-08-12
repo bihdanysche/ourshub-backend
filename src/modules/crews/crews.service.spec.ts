@@ -36,6 +36,15 @@ describe('CrewsService', () => {
       findUnique: jest.fn(),
       create: jest.fn(),
     },
+    splitMember: {
+      findMany: jest.fn().mockResolvedValue([]),
+    },
+    splitExpense: {
+      findMany: jest.fn().mockResolvedValue([]),
+    },
+    split: {
+      count: jest.fn().mockResolvedValue(2),
+    },
     $transaction: jest.fn(),
   };
 
@@ -184,6 +193,7 @@ describe('CrewsService', () => {
         avatar: 'https://avatar.png',
         cover: 'https://cover.png',
         membersCount: 3,
+        activeSplitsCount: 2,
         role: CrewMemberRole.OWNER,
         inviteCode: 'uuid-1234',
         createdAt: now,

@@ -6,6 +6,7 @@ import { CrewsModule } from './modules/crews/crews.module';
 import { HealthModule } from './modules/health/health.module';
 import { MeModule } from './modules/me/me.module';
 import { PostsModule } from './modules/posts/posts.module';
+import { SplitsModule } from './modules/splits/splits.module';
 import { PrismaModule } from './prisma/prisma.module';
 
 @Module({
@@ -25,6 +26,7 @@ import { PrismaModule } from './prisma/prisma.module';
     MeModule,
     CrewsModule,
     PostsModule,
+    SplitsModule,
   ],
 })
 export class AppModule {}

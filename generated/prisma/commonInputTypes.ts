@@ -181,6 +181,63 @@ export type UuidWithAggregatesFilter<$PrismaModel = never> = {
   _max?: Prisma.NestedStringFilter<$PrismaModel>
 }
 
+export type BoolFilter<$PrismaModel = never> = {
+  equals?: boolean | Prisma.BooleanFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedBoolFilter<$PrismaModel> | boolean
+}
+
+export type BoolWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: boolean | Prisma.BooleanFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedBoolWithAggregatesFilter<$PrismaModel> | boolean
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedBoolFilter<$PrismaModel>
+  _max?: Prisma.NestedBoolFilter<$PrismaModel>
+}
+
+export type FloatFilter<$PrismaModel = never> = {
+  equals?: number | Prisma.FloatFieldRefInput<$PrismaModel>
+  in?: number[] | Prisma.ListFloatFieldRefInput<$PrismaModel>
+  notIn?: number[] | Prisma.ListFloatFieldRefInput<$PrismaModel>
+  lt?: number | Prisma.FloatFieldRefInput<$PrismaModel>
+  lte?: number | Prisma.FloatFieldRefInput<$PrismaModel>
+  gt?: number | Prisma.FloatFieldRefInput<$PrismaModel>
+  gte?: number | Prisma.FloatFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedFloatFilter<$PrismaModel> | number
+}
+
+export type FloatWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: number | Prisma.FloatFieldRefInput<$PrismaModel>
+  in?: number[] | Prisma.ListFloatFieldRefInput<$PrismaModel>
+  notIn?: number[] | Prisma.ListFloatFieldRefInput<$PrismaModel>
+  lt?: number | Prisma.FloatFieldRefInput<$PrismaModel>
+  lte?: number | Prisma.FloatFieldRefInput<$PrismaModel>
+  gt?: number | Prisma.FloatFieldRefInput<$PrismaModel>
+  gte?: number | Prisma.FloatFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedFloatWithAggregatesFilter<$PrismaModel> | number
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _avg?: Prisma.NestedFloatFilter<$PrismaModel>
+  _sum?: Prisma.NestedFloatFilter<$PrismaModel>
+  _min?: Prisma.NestedFloatFilter<$PrismaModel>
+  _max?: Prisma.NestedFloatFilter<$PrismaModel>
+}
+
+export type EnumExpensePayHistoryTypeFilter<$PrismaModel = never> = {
+  equals?: $Enums.ExpensePayHistoryType | Prisma.EnumExpensePayHistoryTypeFieldRefInput<$PrismaModel>
+  in?: $Enums.ExpensePayHistoryType[] | Prisma.ListEnumExpensePayHistoryTypeFieldRefInput<$PrismaModel>
+  notIn?: $Enums.ExpensePayHistoryType[] | Prisma.ListEnumExpensePayHistoryTypeFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumExpensePayHistoryTypeFilter<$PrismaModel> | $Enums.ExpensePayHistoryType
+}
+
+export type EnumExpensePayHistoryTypeWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.ExpensePayHistoryType | Prisma.EnumExpensePayHistoryTypeFieldRefInput<$PrismaModel>
+  in?: $Enums.ExpensePayHistoryType[] | Prisma.ListEnumExpensePayHistoryTypeFieldRefInput<$PrismaModel>
+  notIn?: $Enums.ExpensePayHistoryType[] | Prisma.ListEnumExpensePayHistoryTypeFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumExpensePayHistoryTypeWithAggregatesFilter<$PrismaModel> | $Enums.ExpensePayHistoryType
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumExpensePayHistoryTypeFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumExpensePayHistoryTypeFilter<$PrismaModel>
+}
+
 export type NestedIntFilter<$PrismaModel = never> = {
   equals?: number | Prisma.IntFieldRefInput<$PrismaModel>
   in?: number[] | Prisma.ListIntFieldRefInput<$PrismaModel>
@@ -357,6 +414,52 @@ export type NestedUuidWithAggregatesFilter<$PrismaModel = never> = {
   _count?: Prisma.NestedIntFilter<$PrismaModel>
   _min?: Prisma.NestedStringFilter<$PrismaModel>
   _max?: Prisma.NestedStringFilter<$PrismaModel>
+}
+
+export type NestedBoolFilter<$PrismaModel = never> = {
+  equals?: boolean | Prisma.BooleanFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedBoolFilter<$PrismaModel> | boolean
+}
+
+export type NestedBoolWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: boolean | Prisma.BooleanFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedBoolWithAggregatesFilter<$PrismaModel> | boolean
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedBoolFilter<$PrismaModel>
+  _max?: Prisma.NestedBoolFilter<$PrismaModel>
+}
+
+export type NestedFloatWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: number | Prisma.FloatFieldRefInput<$PrismaModel>
+  in?: number[] | Prisma.ListFloatFieldRefInput<$PrismaModel>
+  notIn?: number[] | Prisma.ListFloatFieldRefInput<$PrismaModel>
+  lt?: number | Prisma.FloatFieldRefInput<$PrismaModel>
+  lte?: number | Prisma.FloatFieldRefInput<$PrismaModel>
+  gt?: number | Prisma.FloatFieldRefInput<$PrismaModel>
+  gte?: number | Prisma.FloatFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedFloatWithAggregatesFilter<$PrismaModel> | number
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _avg?: Prisma.NestedFloatFilter<$PrismaModel>
+  _sum?: Prisma.NestedFloatFilter<$PrismaModel>
+  _min?: Prisma.NestedFloatFilter<$PrismaModel>
+  _max?: Prisma.NestedFloatFilter<$PrismaModel>
+}
+
+export type NestedEnumExpensePayHistoryTypeFilter<$PrismaModel = never> = {
+  equals?: $Enums.ExpensePayHistoryType | Prisma.EnumExpensePayHistoryTypeFieldRefInput<$PrismaModel>
+  in?: $Enums.ExpensePayHistoryType[] | Prisma.ListEnumExpensePayHistoryTypeFieldRefInput<$PrismaModel>
+  notIn?: $Enums.ExpensePayHistoryType[] | Prisma.ListEnumExpensePayHistoryTypeFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumExpensePayHistoryTypeFilter<$PrismaModel> | $Enums.ExpensePayHistoryType
+}
+
+export type NestedEnumExpensePayHistoryTypeWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.ExpensePayHistoryType | Prisma.EnumExpensePayHistoryTypeFieldRefInput<$PrismaModel>
+  in?: $Enums.ExpensePayHistoryType[] | Prisma.ListEnumExpensePayHistoryTypeFieldRefInput<$PrismaModel>
+  notIn?: $Enums.ExpensePayHistoryType[] | Prisma.ListEnumExpensePayHistoryTypeFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumExpensePayHistoryTypeWithAggregatesFilter<$PrismaModel> | $Enums.ExpensePayHistoryType
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumExpensePayHistoryTypeFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumExpensePayHistoryTypeFilter<$PrismaModel>
 }
 
 

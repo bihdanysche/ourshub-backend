@@ -15,6 +15,13 @@ enum CrewMemberRole {
   @@map("crew_member_roles")
 }
 
+enum ExpensePayHistoryType {
+  PAY
+  INC
+
+  @@map("expense_pay_history_types")
+}
+
 model User {
   id             Int          @id @default(autoincrement())
   tg_id          String       @unique
@@ -25,9 +32,13 @@ model User {
   avatar         String?
   createdAt      DateTime     @default(now())
 
-  sessions       Session[]
-  crewMembers    CrewMember[]
-  posts          Post[]
+  sessions          Session[]
+  crewMembers       CrewMember[]
+  posts             Post[]
+  splitExpenses     SplitExpense[]
+  splitMembers      SplitMember[]
+  payHistories      ExpensePayHistory[]
+  expenseRequests   ExpenseRequest[]
 }
 
 model Session {
@@ -56,6 +67,7 @@ model Crew {
   members        CrewMember[]
   invitationLink CrewInvitationLink?
   posts          Post[]
+  splits         Split[]
 
   @@map("crews")
 }
@@ -102,4 +114,94 @@ model Post {
   @@index([crewId])
   @@index([authorId])
   @@map("posts")
+}
+
+model Split {
+  id        Int      @id @default(autoincrement())
+  title     String
+  desc      String?
+  crewId    Int      @map("crew_id")
+  archived  Boolean  @default(false)
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  crew      Crew                @relation(fields: [crewId], references: [id], onDelete: Cascade)
+  expenses  SplitExpense[]
+  histories ExpensePayHistory[]
+
+  @@index([crewId])
+  @@map("splits")
+}
+
+model SplitExpense {
+  id        Int      @id @default(autoincrement())
+  splitId   Int      @map("split_id")
+  title     String
+  desc      String?
+  spenderId Int      @map("spender_id")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  split           Split               @relation(fields: [splitId], references: [id], onDelete: Cascade)
+  spender         User                @relation(fields: [spenderId], references: [id], onDelete: Cascade)
+  members         SplitMember[]
+  histories       ExpensePayHistory[]
+  expenseRequests ExpenseRequest[]
+
+  @@index([splitId])
+  @@index([spenderId])
+  @@map("split_expenses")
+}
+
+model SplitMember {
+  id             Int          @id @default(autoincrement())
+  splitExpenseId Int          @map("split_expense_id")
+  userId         Int          @map("user_id")
+  paid           Float        @default(0)
+  mustPay        Float        @default(0)
+
+  splitExpense   SplitExpense @relation(fields: [splitExpenseId], references: [id], onDelete: Cascade)
+  user           User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([splitExpenseId, userId])
+  @@index([userId])
+  @@index([splitExpenseId])
+  @@map("split_members")
+}
+
+model ExpensePayHistory {
+  id             Int                   @id @default(autoincrement())
+  splitId        Int                   @map("split_id")
+  splitExpenseId Int                   @map("split_expense_id")
+  userId         Int                   @map("user_id")
+  amount         Float
+  type           ExpensePayHistoryType
+  msg            String?
+  procByRequest  Boolean               @default(false) @map("proc_by_request")
+  createdAt      DateTime              @default(now()) @map("created_at")
+
+  split          Split                 @relation(fields: [splitId], references: [id], onDelete: Cascade)
+  splitExpense   SplitExpense          @relation(fields: [splitExpenseId], references: [id], onDelete: Cascade)
+  user           User                  @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([splitId])
+  @@index([splitExpenseId])
+  @@index([userId])
+  @@map("expense_pay_histories")
+}
+
+model ExpenseRequest {
+  id        Int      @id @default(autoincrement())
+  userId    Int      @map("user_id")
+  expenseId Int      @map("expense_id")
+  amount    Float
+  msg       String?
+  createdAt DateTime @default(now()) @map("created_at")
+
+  user    User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  expense SplitExpense @relation(fields: [expenseId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([expenseId])
+  @@map("expense_requests")
 }

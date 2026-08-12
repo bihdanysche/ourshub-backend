@@ -1,9 +1,16 @@
 import { Transform, TransformFnParams, Type } from 'class-transformer';
 import { IsInt, IsOptional, IsString, Max, Min } from 'class-validator';
 import { PaginationQueryDto } from 'src/common/dto/pagination/pagination-query.dto';
-import { CREW_LIMITS } from '../constants/crews.constants';
+import { SPLIT_LIMITS } from '../constants/splits.constants';
 
-export class GetCrewMembersQueryDto extends PaginationQueryDto {
+export class GetSplitHistoryQueryDto extends PaginationQueryDto {
+  @IsOptional()
+  @Type(() => Number)
+  @IsInt()
+  @Min(1)
+  @Max(SPLIT_LIMITS.MAX_PAGE_LIMIT)
+  limit: number = SPLIT_LIMITS.DEFAULT_PAGE_LIMIT;
+
   @IsOptional()
   @IsString()
   @Transform(({ value }: TransformFnParams): string | undefined =>
@@ -17,6 +24,5 @@ export class GetCrewMembersQueryDto extends PaginationQueryDto {
   @Type(() => Number)
   @IsInt()
   @Min(1)
-  @Max(CREW_LIMITS.MAX_MEMBERS_LIMIT)
-  limit: number = CREW_LIMITS.DEFAULT_MEMBERS_LIMIT;
+  userId?: number;
 }

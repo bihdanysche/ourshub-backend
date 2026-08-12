@@ -6,6 +6,7 @@ export class CrewDetailResponseDto {
   avatar: string | null;
   cover: string | null;
   membersCount: number;
+  activeSplitsCount: number;
   role: CrewMemberRole;
   inviteCode?: string | null;
   createdAt: Date;

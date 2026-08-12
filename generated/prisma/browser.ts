@@ -47,3 +47,28 @@ export type CrewInvitationLink = Prisma.CrewInvitationLinkModel
  * 
  */
 export type Post = Prisma.PostModel
+/**
+ * Model Split
+ * 
+ */
+export type Split = Prisma.SplitModel
+/**
+ * Model SplitExpense
+ * 
+ */
+export type SplitExpense = Prisma.SplitExpenseModel
+/**
+ * Model SplitMember
+ * 
+ */
+export type SplitMember = Prisma.SplitMemberModel
+/**
+ * Model ExpensePayHistory
+ * 
+ */
+export type ExpensePayHistory = Prisma.ExpensePayHistoryModel
+/**
+ * Model ExpenseRequest
+ * 
+ */
+export type ExpenseRequest = Prisma.ExpenseRequestModel

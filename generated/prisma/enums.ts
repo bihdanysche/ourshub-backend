@@ -15,3 +15,11 @@ export const CrewMemberRole = {
 } as const
 
 export type CrewMemberRole = (typeof CrewMemberRole)[keyof typeof CrewMemberRole]
+
+
+export const ExpensePayHistoryType = {
+  PAY: 'PAY',
+  INC: 'INC'
+} as const
+
+export type ExpensePayHistoryType = (typeof ExpensePayHistoryType)[keyof typeof ExpensePayHistoryType]

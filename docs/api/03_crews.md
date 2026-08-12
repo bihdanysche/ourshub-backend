@@ -175,6 +175,7 @@ Retrieves detailed information about a specific crew. Only accessible to crew me
       "avatar": "https://storage.ourshub.com/crews/1/avatar.png",
       "cover": "https://storage.ourshub.com/crews/1/cover.png",
       "membersCount": 8,
+      "activeSplitsCount": 3,
       "role": "OWNER",
       "inviteCode": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
       "createdAt": "2026-08-01T10:00:00.000Z"
@@ -188,6 +189,7 @@ Retrieves detailed information about a specific crew. Only accessible to crew me
       "avatar": "https://storage.ourshub.com/crews/1/avatar.png",
       "cover": "https://storage.ourshub.com/crews/1/cover.png",
       "membersCount": 8,
+      "activeSplitsCount": 2,
       "role": "MEMBER",
       "inviteCode": null,
       "createdAt": "2026-08-01T10:00:00.000Z"
@@ -209,6 +211,7 @@ Retrieves paginated list of members in the crew. Ordered with `OWNER` first, fol
 - **Query Parameters (`GetCrewMembersQueryDto`):**
   - `page` *(number, optional, default: 1, min: 1)*: Page number.
   - `limit` *(number, optional, default: 10, min: 1, max: 50)*: Elements per page.
+  - `q` *(string, optional)*: Search query string to filter members simultaneously by `name`, `username`, and `alias` (case-insensitive).
 - **Success Response (`200 OK`):**
   ```json
   {
@@ -307,6 +310,8 @@ Removes a member from the crew.
   | Status | Error Code | Description |
   |---|---|---|
   | `400 Bad Request` | `CANNOT_LEAVE_AS_OWNER` | The crew owner cannot leave the crew without deleting it. |
+  | `400 Bad Request` | `CANNOT_LEAVE_WITH_UNPAID_SPLITS` | User has active unpaid debts or uncollected spender balances in crew splits. |
+  | `400 Bad Request` | `CANNOT_KICK_MEMBER_WITH_UNPAID_SPLITS` | Member has active unpaid debts or uncollected spender balances in crew splits. |
   | `403 Forbidden` | `ONLY_OWNER_CAN_KICK_MEMBERS` | Only the crew owner has permission to kick other members. |
   | `404 Not Found` | `CREW_NOT_FOUND` | Crew does not exist or user is not a member. |
   | `404 Not Found` | `MEMBER_NOT_FOUND` | Member ID not found in this crew. |

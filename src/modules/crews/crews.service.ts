@@ -6,6 +6,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { randomUUID } from 'crypto';
+import { Prisma } from 'generated/prisma/client';
 import { PaginatedResponseDto } from 'src/common/dto/pagination/paginated-response.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CREW_LIMITS } from './constants/crews.constants';
@@ -150,12 +151,34 @@ export class CrewsService {
     const currentMember = crew.members[0];
     const isOwner = currentMember.role === CrewMemberRole.OWNER;
 
+    const splitWhere: Prisma.SplitWhereInput = {
+      crewId,
+      archived: false,
+    };
+
+    if (!isOwner) {
+      splitWhere.expenses = {
+        some: {
+          members: {
+            some: {
+              userId,
+            },
+          },
+        },
+      };
+    }
+
+    const activeSplitsCount = await this.prisma.split.count({
+      where: splitWhere,
+    });
+
     return {
       id: crew.id,
       title: crew.title,
       avatar: crew.avatar,
       cover: crew.cover,
       membersCount: crew._count.members,
+      activeSplitsCount,
       role: currentMember.role,
       inviteCode: isOwner ? (crew.invitationLink?.inviteCode ?? null) : null,
       createdAt: crew.createdAt,
@@ -182,12 +205,20 @@ export class CrewsService {
       });
     }
 
-    const total = await this.prisma.crewMember.count({
-      where: { crewId },
-    });
+    const where: any = { crewId };
+
+    if (query.q) {
+      where.OR = [
+        { user: { name: { contains: query.q, mode: 'insensitive' } } },
+        { user: { username: { contains: query.q, mode: 'insensitive' } } },
+        { alias: { contains: query.q, mode: 'insensitive' } },
+      ];
+    }
+
+    const total = await this.prisma.crewMember.count({ where });
 
     const members = await this.prisma.crewMember.findMany({
-      where: { crewId },
+      where,
       include: {
         user: {
           select: {
@@ -318,23 +349,67 @@ export class CrewsService {
     const isSelf = targetMember.userId === userId;
     const isOwner = currentMember.role === CrewMemberRole.OWNER;
 
-    if (isSelf) {
-      if (targetMember.role === CrewMemberRole.OWNER) {
-        throw new BadRequestException({
-          error_code: CrewErrorCode.CANNOT_LEAVE_AS_OWNER,
-        });
-      }
-
-      await this.prisma.crewMember.delete({
-        where: { id: targetMember.id },
+    if (isSelf && targetMember.role === CrewMemberRole.OWNER) {
+      throw new BadRequestException({
+        error_code: CrewErrorCode.CANNOT_LEAVE_AS_OWNER,
       });
-
-      return { ok: true };
     }
 
-    if (!isOwner) {
+    if (!isSelf && !isOwner) {
       throw new ForbiddenException({
         error_code: CrewErrorCode.ONLY_OWNER_CAN_KICK_MEMBERS,
+      });
+    }
+
+    const activeSplitMembers = await this.prisma.splitMember.findMany({
+      where: {
+        userId: targetMember.userId,
+        splitExpense: {
+          split: {
+            crewId,
+            archived: false,
+          },
+        },
+      },
+      select: {
+        paid: true,
+        mustPay: true,
+      },
+    });
+
+    const hasUnpaidDebt = activeSplitMembers.some(
+      (sm) => Math.round(sm.paid * 100) < Math.round(sm.mustPay * 100),
+    );
+
+    const activeSpenderExpenses = await this.prisma.splitExpense.findMany({
+      where: {
+        spenderId: targetMember.userId,
+        split: {
+          crewId,
+          archived: false,
+        },
+      },
+      select: {
+        members: {
+          select: {
+            paid: true,
+            mustPay: true,
+          },
+        },
+      },
+    });
+
+    const hasUncollectedSpenderDebt = activeSpenderExpenses.some((exp) =>
+      exp.members.some(
+        (sm) => Math.round(sm.paid * 100) < Math.round(sm.mustPay * 100),
+      ),
+    );
+
+    if (hasUnpaidDebt || hasUncollectedSpenderDebt) {
+      throw new BadRequestException({
+        error_code: isSelf
+          ? CrewErrorCode.CANNOT_LEAVE_WITH_UNPAID_SPLITS
+          : CrewErrorCode.CANNOT_KICK_MEMBER_WITH_UNPAID_SPLITS,
       });
     }
 
