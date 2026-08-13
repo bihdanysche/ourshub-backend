@@ -6,6 +6,7 @@ import {
 } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { PrismaService } from 'src/prisma/prisma.service';
+import { StorageService } from 'src/modules/storage/storage.service';
 import { CREW_LIMITS } from './constants/crews.constants';
 import { CrewsService } from './crews.service';
 import { CrewMemberRole } from './enums/crew-member-role.enum';
@@ -13,6 +14,13 @@ import { CrewErrorCode } from './errors/crew-error.code.enum';
 
 describe('CrewsService', () => {
   let service: CrewsService;
+
+  const mockStorageService = {
+    upload: jest.fn(),
+    uploadBuffer: jest.fn().mockResolvedValue('key'),
+    get: jest.fn(),
+    delete: jest.fn().mockResolvedValue(undefined),
+  };
 
   const mockPrismaService = {
     crew: {
@@ -55,6 +63,7 @@ describe('CrewsService', () => {
       providers: [
         CrewsService,
         { provide: PrismaService, useValue: mockPrismaService },
+        { provide: StorageService, useValue: mockStorageService },
       ],
     }).compile();
 
@@ -629,6 +638,41 @@ describe('CrewsService', () => {
         },
       });
       expect(result).toEqual({ ok: true, crewId: 5 });
+    });
+  });
+
+  describe('deleteCrewAvatar & deleteCrewCover', () => {
+    it('should throw ForbiddenException if user is not crew owner', async () => {
+      mockPrismaService.crewMember.findUnique.mockResolvedValue({
+        crewId: 5,
+        userId: 1,
+        role: CrewMemberRole.MEMBER,
+      });
+
+      await expect(service.deleteCrewAvatar(1, 5)).rejects.toThrow(ForbiddenException);
+      await expect(service.deleteCrewCover(1, 5)).rejects.toThrow(ForbiddenException);
+    });
+
+    it('should delete avatar if user is owner and avatar exists', async () => {
+      mockPrismaService.crewMember.findUnique.mockResolvedValue({
+        crewId: 5,
+        userId: 1,
+        role: CrewMemberRole.OWNER,
+      });
+      mockPrismaService.crew.findUnique.mockResolvedValue({
+        id: 5,
+        avatar: 'crews/avatars/5_old.png',
+        cover: 'crews/covers/5_old.png',
+      });
+      mockPrismaService.crew.update.mockResolvedValue({});
+
+      const resultAvatar = await service.deleteCrewAvatar(1, 5);
+      expect(resultAvatar).toEqual({ ok: true });
+      expect(mockStorageService.delete).toHaveBeenCalledWith('crews/avatars/5_old.png');
+
+      const resultCover = await service.deleteCrewCover(1, 5);
+      expect(resultCover).toEqual({ ok: true });
+      expect(mockStorageService.delete).toHaveBeenCalledWith('crews/covers/5_old.png');
     });
   });
 });

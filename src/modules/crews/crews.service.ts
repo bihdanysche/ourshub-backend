@@ -8,7 +8,9 @@ import {
 import { randomUUID } from 'crypto';
 import { Prisma } from 'generated/prisma/client';
 import { PaginatedResponseDto } from 'src/common/dto/pagination/paginated-response.dto';
+import { processAndValidateImage } from 'src/common/utils/media-helper.util';
 import { PrismaService } from 'src/prisma/prisma.service';
+import { StorageService } from 'src/modules/storage/storage.service';
 import { CREW_LIMITS } from './constants/crews.constants';
 import { CreateCrewDto } from './dto/create-crew.dto';
 import { CrewDetailResponseDto } from './dto/crew-detail-response.dto';
@@ -25,7 +27,10 @@ import { CrewErrorCode } from './errors/crew-error.code.enum';
 
 @Injectable()
 export class CrewsService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly storageService: StorageService,
+  ) {}
 
   async getCrews(
     userId: number,
@@ -606,5 +611,176 @@ export class CrewsService {
       ok: true,
       crewId: invite.crewId,
     };
+  }
+
+  private async ensureCrewOwner(userId: number, crewId: number) {
+    const currentMember = await this.prisma.crewMember.findUnique({
+      where: {
+        crewId_userId: {
+          crewId,
+          userId,
+        },
+      },
+    });
+
+    if (!currentMember) {
+      throw new NotFoundException({
+        error_code: CrewErrorCode.CREW_NOT_FOUND,
+      });
+    }
+
+    if (currentMember.role !== CrewMemberRole.OWNER) {
+      throw new ForbiddenException({
+        error_code: CrewErrorCode.ONLY_OWNER_CAN_UPDATE_CREW,
+      });
+    }
+  }
+
+  async uploadCrewAvatar(
+    userId: number,
+    crewId: number,
+    file: Express.Multer.File,
+  ): Promise<{ ok: true }> {
+    await this.ensureCrewOwner(userId, crewId);
+
+    const processed = await processAndValidateImage(file, {
+      maxSizeBytes: 20 * 1024 * 1024,
+      targetAspectRatio: 1,
+      errorCodes: {
+        IMAGE_REQUIRED: CrewErrorCode.IMAGE_REQUIRED,
+        INVALID_IMAGE_FORMAT: CrewErrorCode.INVALID_IMAGE_FORMAT,
+        IMAGE_TOO_LARGE: CrewErrorCode.IMAGE_TOO_LARGE,
+        INVALID_IMAGE_ASPECT_RATIO: CrewErrorCode.INVALID_IMAGE_ASPECT_RATIO,
+      },
+    });
+
+    const crew = await this.prisma.crew.findUnique({
+      where: { id: crewId },
+    });
+
+    if (!crew) {
+      throw new NotFoundException({
+        error_code: CrewErrorCode.CREW_NOT_FOUND,
+      });
+    }
+
+    if (crew.avatar) {
+      await this.storageService.delete(crew.avatar);
+    }
+
+    const key = `crews/avatars/${crewId}_${randomUUID()}.${processed.extension}`;
+    await this.storageService.uploadBuffer(
+      processed.buffer,
+      key,
+      processed.contentType,
+    );
+
+    await this.prisma.crew.update({
+      where: { id: crewId },
+      data: { avatar: key },
+    });
+
+    return { ok: true };
+  }
+
+  async uploadCrewCover(
+    userId: number,
+    crewId: number,
+    file: Express.Multer.File,
+  ): Promise<{ ok: true }> {
+    await this.ensureCrewOwner(userId, crewId);
+
+    const processed = await processAndValidateImage(file, {
+      maxSizeBytes: 20 * 1024 * 1024,
+      targetAspectRatio: 3,
+      errorCodes: {
+        IMAGE_REQUIRED: CrewErrorCode.IMAGE_REQUIRED,
+        INVALID_IMAGE_FORMAT: CrewErrorCode.INVALID_IMAGE_FORMAT,
+        IMAGE_TOO_LARGE: CrewErrorCode.IMAGE_TOO_LARGE,
+        INVALID_IMAGE_ASPECT_RATIO: CrewErrorCode.INVALID_IMAGE_ASPECT_RATIO,
+      },
+    });
+
+    const crew = await this.prisma.crew.findUnique({
+      where: { id: crewId },
+    });
+
+    if (!crew) {
+      throw new NotFoundException({
+        error_code: CrewErrorCode.CREW_NOT_FOUND,
+      });
+    }
+
+    if (crew.cover) {
+      await this.storageService.delete(crew.cover);
+    }
+
+    const key = `crews/covers/${crewId}_${randomUUID()}.${processed.extension}`;
+    await this.storageService.uploadBuffer(
+      processed.buffer,
+      key,
+      processed.contentType,
+    );
+
+    await this.prisma.crew.update({
+      where: { id: crewId },
+      data: { cover: key },
+    });
+
+    return { ok: true };
+  }
+
+  async deleteCrewAvatar(
+    userId: number,
+    crewId: number,
+  ): Promise<{ ok: true }> {
+    await this.ensureCrewOwner(userId, crewId);
+
+    const crew = await this.prisma.crew.findUnique({
+      where: { id: crewId },
+    });
+
+    if (!crew) {
+      throw new NotFoundException({
+        error_code: CrewErrorCode.CREW_NOT_FOUND,
+      });
+    }
+
+    if (crew.avatar) {
+      await this.storageService.delete(crew.avatar);
+      await this.prisma.crew.update({
+        where: { id: crewId },
+        data: { avatar: null },
+      });
+    }
+
+    return { ok: true };
+  }
+
+  async deleteCrewCover(
+    userId: number,
+    crewId: number,
+  ): Promise<{ ok: true }> {
+    await this.ensureCrewOwner(userId, crewId);
+
+    const crew = await this.prisma.crew.findUnique({
+      where: { id: crewId },
+    });
+
+    if (!crew) {
+      throw new NotFoundException({
+        error_code: CrewErrorCode.CREW_NOT_FOUND,
+      });
+    }
+
+    if (crew.cover) {
+      await this.storageService.delete(crew.cover);
+      await this.prisma.crew.update({
+        where: { id: crewId },
+        data: { cover: null },
+      });
+    }
+
+    return { ok: true };
   }
 }

@@ -14,6 +14,8 @@
 | `POST` | `/auth/refresh` | Public (Cookies) | Rotates token pair and extends session (+90 days) |
 | `POST` | `/auth/logout` | Public / Auth | Terminates current session and clears cookies |
 | `GET` | `/auth/me` | `@AuthRequired()` | Returns current user profile |
+| `POST` | `/auth/me/avatar` | `@AuthRequired()` | Uploads user avatar (multipart/form-data, max 15MB, 1:1 ratio, HEIC converted to PNG) |
+| `DELETE` | `/auth/me/avatar` | `@AuthRequired()` | Removes user avatar from storage and clears database field |
 | `GET` | `/auth/sessions` | `@AuthRequired()` | Lists all active sessions with `isCurrent` flag and `location` |
 | `POST` | `/auth/sessions/shutdown/:id` | `@AuthRequired()` | Terminates a specific **non-current** session |
 | `POST` | `/auth/sessions/shutdown-all` | `@AuthRequired()` | Terminates all sessions **except** the current one |
@@ -137,6 +139,49 @@ Retrieves the profile of the authenticated user.
 
 ---
 
+### `POST /auth/me/avatar`
+Uploads or updates the current user's profile avatar image. Replaces and deletes any previously uploaded avatar from MinIO storage.
+
+- **Access:** `@AuthRequired()`
+- **Content-Type:** `multipart/form-data`
+- **Body Form Data:**
+  - `file` *(file, required)*: Single image file (`png`, `jpg`, `jpeg`, `heic`). Maximum size **15 MB**. Aspect ratio must be **1:1**. HEIC images are automatically converted to PNG format before saving.
+- **Success Response (200 OK):**
+  ```json
+  {
+    "ok": true
+  }
+  ```
+
+#### Errors:
+| Status | Error Code | Description |
+|---|---|---|
+| `400 Bad Request` | `IMAGE_REQUIRED` | No file attached in `multipart/form-data`. |
+| `400 Bad Request` | `INVALID_IMAGE_FORMAT` | Unsupported file format (not PNG/JPG/JPEG/HEIC) or corrupted file. |
+| `400 Bad Request` | `IMAGE_TOO_LARGE` | File size exceeds 15 MB limit. |
+| `400 Bad Request` | `INVALID_IMAGE_ASPECT_RATIO` | Image aspect ratio is not 1:1. |
+| `401 Unauthorized` | `UNAUTHORIZED` / `TOKEN_EXPIRED` / `SESSION_EXPIRED` | User not authenticated. |
+
+---
+
+### `DELETE /auth/me/avatar`
+Deletes the current user's avatar image from MinIO storage and resets the `User.avatar` field in the database to `null`.
+
+- **Access:** `@AuthRequired()`
+- **Success Response (200 OK):**
+  ```json
+  {
+    "ok": true
+  }
+  ```
+
+#### Errors:
+| Status | Error Code | Description |
+|---|---|---|
+| `401 Unauthorized` | `UNAUTHORIZED` / `TOKEN_EXPIRED` / `SESSION_EXPIRED` | User not authenticated. |
+
+---
+
 ### `GET /auth/sessions`
 Returns a list of all active sessions for the current user, sorted by last activity (`lastUsedAt` descending), including geolocation determined from client IP.
 
@@ -240,6 +285,10 @@ All API error responses follow the standard format:
 | `INVALID_ACCESS_TOKEN` | `401` | Access token signature is invalid or corrupted. | Clear client state and redirect to login. |
 | `SESSION_EXPIRED` | `401` | Session expired or deleted from database. | Redirect to login page. |
 | `SESSION_NOT_FOUND` | `404` | Target session not found or unauthorized. | Re-fetch `/auth/sessions` list. |
+| `IMAGE_REQUIRED` | `400` | No image file was attached in `multipart/form-data`. | Attach a valid image file under key `file`. |
+| `INVALID_IMAGE_FORMAT` | `400` | Unsupported file format (only `png`, `jpg`, `jpeg`, `heic` allowed). | Choose a supported image file format. |
+| `IMAGE_TOO_LARGE` | `400` | Attached file exceeds size limit (15 MB). | Compress image or select a smaller file. |
+| `INVALID_IMAGE_ASPECT_RATIO` | `400` | Image aspect ratio is not 1:1. | Crop image to a 1:1 square aspect ratio before upload. |
 
 ---
 

@@ -1,5 +1,6 @@
 import {
   Controller,
+  Delete,
   Get,
   Param,
   ParseIntPipe,
@@ -7,7 +8,10 @@ import {
   Query,
   Req,
   Res,
+  UploadedFile,
+  UseInterceptors,
 } from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express';
 import type { Request, Response } from 'express';
 import { AuthService } from './auth.service';
 import { AuthRequired } from './decorators/auth-required.decorator';
@@ -58,6 +62,24 @@ export class AuthController {
   @AuthRequired()
   getMe(@CurrentUser() user: UserEntity): UserResponseDto {
     return this.authService.getMe(user);
+  }
+
+  @Post('me/avatar')
+  @AuthRequired()
+  @UseInterceptors(FileInterceptor('file'))
+  async uploadAvatar(
+    @CurrentUser('id') userId: number,
+    @UploadedFile() file?: Express.Multer.File,
+  ): Promise<{ ok: true }> {
+    return await this.authService.uploadAvatar(userId, file!);
+  }
+
+  @Delete('me/avatar')
+  @AuthRequired()
+  async deleteAvatar(
+    @CurrentUser('id') userId: number,
+  ): Promise<{ ok: true }> {
+    return await this.authService.deleteAvatar(userId);
   }
 
   @Get('sessions')

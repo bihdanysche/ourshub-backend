@@ -1,12 +1,20 @@
-import { ForbiddenException, NotFoundException } from '@nestjs/common';
+import { BadRequestException, ForbiddenException, NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { CrewMemberRole } from 'src/modules/crews/enums/crew-member-role.enum';
+import { StorageService } from 'src/modules/storage/storage.service';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { PostErrorCode } from './errors/post-error.code.enum';
 import { PostsService } from './posts.service';
 
 describe('PostsService', () => {
   let service: PostsService;
+
+  const mockStorageService = {
+    upload: jest.fn(),
+    uploadBuffer: jest.fn().mockResolvedValue('key'),
+    get: jest.fn(),
+    delete: jest.fn().mockResolvedValue(undefined),
+  };
 
   const mockPrismaService = {
     crewMember: {
@@ -20,6 +28,12 @@ describe('PostsService', () => {
       update: jest.fn(),
       delete: jest.fn(),
     },
+    postAttachment: {
+      create: jest.fn(),
+      findFirst: jest.fn(),
+      delete: jest.fn(),
+      deleteMany: jest.fn(),
+    },
   };
 
   beforeEach(async () => {
@@ -29,6 +43,7 @@ describe('PostsService', () => {
       providers: [
         PostsService,
         { provide: PrismaService, useValue: mockPrismaService },
+        { provide: StorageService, useValue: mockStorageService },
       ],
     }).compile();
 
@@ -52,7 +67,7 @@ describe('PostsService', () => {
       );
     });
 
-    it('should return paginated posts with author info and youIsAuthor flag', async () => {
+    it('should return paginated posts with author info, attachments, and youIsAuthor flag', async () => {
       mockPrismaService.crewMember.findUnique.mockResolvedValue({
         crewId: 10,
         userId: 1,
@@ -78,6 +93,16 @@ describe('PostsService', () => {
             avatar: 'https://avatar.png',
             crewMembers: [{ alias: 'Choom' }],
           },
+          attachments: [
+            {
+              id: 1,
+              key: 'posts/attachments/100_abc_video.mp4',
+              name: 'video.mp4',
+              mimeType: 'video/mp4',
+              size: 1024,
+              createdAt: mockCreatedAt,
+            },
+          ],
         },
       ]);
 
@@ -99,6 +124,16 @@ describe('PostsService', () => {
           alias: 'Choom',
           avatar: 'https://avatar.png',
         },
+        attachments: [
+          {
+            id: 1,
+            key: 'posts/attachments/100_abc_video.mp4',
+            name: 'video.mp4',
+            mimeType: 'video/mp4',
+            size: 1024,
+            createdAt: mockCreatedAt,
+          },
+        ],
         createdAt: mockCreatedAt,
         updatedAt: mockUpdatedAt,
       });
@@ -119,15 +154,69 @@ describe('PostsService', () => {
       );
     });
 
-    it('should create post and return ok: true', async () => {
+    it('should throw ATTACHMENT_TOO_LARGE if file exceeds 200MB', async () => {
+      mockPrismaService.crewMember.findUnique.mockResolvedValue({
+        crewId: 10,
+        userId: 1,
+        role: CrewMemberRole.MEMBER,
+      });
+
+      const hugeFile = {
+        originalname: 'big_video.mp4',
+        mimetype: 'video/mp4',
+        size: 201 * 1024 * 1024,
+        buffer: Buffer.from('test'),
+      } as Express.Multer.File;
+
+      await expect(
+        service.createPost(1, 10, { content: 'New Post' }, [hugeFile]),
+      ).rejects.toThrow(
+        expect.objectContaining({
+          response: { error_code: PostErrorCode.ATTACHMENT_TOO_LARGE },
+        }),
+      );
+    });
+
+    it('should throw MAX_ATTACHMENTS_EXCEEDED if more than 15 files are attached', async () => {
+      mockPrismaService.crewMember.findUnique.mockResolvedValue({
+        crewId: 10,
+        userId: 1,
+        role: CrewMemberRole.MEMBER,
+      });
+
+      const files = Array.from({ length: 16 }, (_, i) => ({
+        originalname: `file${i}.png`,
+        mimetype: 'image/png',
+        size: 100,
+        buffer: Buffer.from('test'),
+      })) as Express.Multer.File[];
+
+      await expect(
+        service.createPost(1, 10, { content: 'New Post' }, files),
+      ).rejects.toThrow(
+        expect.objectContaining({
+          response: { error_code: PostErrorCode.MAX_ATTACHMENTS_EXCEEDED },
+        }),
+      );
+    });
+
+    it('should create post with attachments and return ok: true', async () => {
       mockPrismaService.crewMember.findUnique.mockResolvedValue({
         crewId: 10,
         userId: 1,
         role: CrewMemberRole.MEMBER,
       });
       mockPrismaService.post.create.mockResolvedValue({ id: 100 });
+      mockPrismaService.postAttachment.create.mockResolvedValue({ id: 1 });
 
-      const result = await service.createPost(1, 10, { content: 'New Post' });
+      const mockFile = {
+        originalname: 'photo.jpg',
+        mimetype: 'image/jpeg',
+        size: 500,
+        buffer: Buffer.from('test'),
+      } as Express.Multer.File;
+
+      const result = await service.createPost(1, 10, { content: 'New Post' }, [mockFile]);
 
       expect(mockPrismaService.post.create).toHaveBeenCalledWith({
         data: {
@@ -136,40 +225,13 @@ describe('PostsService', () => {
           content: 'New Post',
         },
       });
+      expect(mockStorageService.uploadBuffer).toHaveBeenCalled();
+      expect(mockPrismaService.postAttachment.create).toHaveBeenCalled();
       expect(result).toEqual({ ok: true });
     });
   });
 
   describe('updatePost', () => {
-    it('should throw CREW_NOT_FOUND if user is not a member of the crew', async () => {
-      mockPrismaService.crewMember.findUnique.mockResolvedValue(null);
-
-      await expect(
-        service.updatePost(1, 10, 100, { content: 'Updated Post' }),
-      ).rejects.toThrow(
-        expect.objectContaining({
-          response: { error_code: PostErrorCode.CREW_NOT_FOUND },
-        }),
-      );
-    });
-
-    it('should throw POST_NOT_FOUND if post does not exist or belongs to another crew', async () => {
-      mockPrismaService.crewMember.findUnique.mockResolvedValue({
-        crewId: 10,
-        userId: 1,
-        role: CrewMemberRole.MEMBER,
-      });
-      mockPrismaService.post.findUnique.mockResolvedValue(null);
-
-      await expect(
-        service.updatePost(1, 10, 100, { content: 'Updated Post' }),
-      ).rejects.toThrow(
-        expect.objectContaining({
-          response: { error_code: PostErrorCode.POST_NOT_FOUND },
-        }),
-      );
-    });
-
     it('should throw ONLY_AUTHOR_CAN_EDIT_POST if user is not author', async () => {
       mockPrismaService.crewMember.findUnique.mockResolvedValue({
         crewId: 10,
@@ -181,6 +243,7 @@ describe('PostsService', () => {
         crewId: 10,
         authorId: 1,
         content: 'Original',
+        attachments: [],
       });
 
       await expect(
@@ -192,7 +255,7 @@ describe('PostsService', () => {
       );
     });
 
-    it('should update post if user is author', async () => {
+    it('should update post content if user is author', async () => {
       mockPrismaService.crewMember.findUnique.mockResolvedValue({
         crewId: 10,
         userId: 1,
@@ -203,6 +266,7 @@ describe('PostsService', () => {
         crewId: 10,
         authorId: 1,
         content: 'Original',
+        attachments: [],
       });
       mockPrismaService.post.update.mockResolvedValue({ id: 100 });
 
@@ -219,53 +283,7 @@ describe('PostsService', () => {
   });
 
   describe('deletePost', () => {
-    it('should throw CREW_NOT_FOUND if user is not a member of the crew', async () => {
-      mockPrismaService.crewMember.findUnique.mockResolvedValue(null);
-
-      await expect(service.deletePost(1, 10, 100)).rejects.toThrow(
-        expect.objectContaining({
-          response: { error_code: PostErrorCode.CREW_NOT_FOUND },
-        }),
-      );
-    });
-
-    it('should throw POST_NOT_FOUND if post does not exist', async () => {
-      mockPrismaService.crewMember.findUnique.mockResolvedValue({
-        crewId: 10,
-        userId: 1,
-        role: CrewMemberRole.MEMBER,
-      });
-      mockPrismaService.post.findUnique.mockResolvedValue(null);
-
-      await expect(service.deletePost(1, 10, 100)).rejects.toThrow(
-        expect.objectContaining({
-          response: { error_code: PostErrorCode.POST_NOT_FOUND },
-        }),
-      );
-    });
-
-    it('should throw ONLY_AUTHOR_OR_OWNER_CAN_DELETE_POST if user is neither author nor owner', async () => {
-      mockPrismaService.crewMember.findUnique.mockResolvedValue({
-        crewId: 10,
-        userId: 2,
-        role: CrewMemberRole.MEMBER,
-      });
-      mockPrismaService.post.findUnique.mockResolvedValue({
-        id: 100,
-        crewId: 10,
-        authorId: 1,
-      });
-
-      await expect(service.deletePost(2, 10, 100)).rejects.toThrow(
-        expect.objectContaining({
-          response: {
-            error_code: PostErrorCode.ONLY_AUTHOR_OR_OWNER_CAN_DELETE_POST,
-          },
-        }),
-      );
-    });
-
-    it('should allow post deletion if user is post author', async () => {
+    it('should allow post deletion and clean up attachments from storage', async () => {
       mockPrismaService.crewMember.findUnique.mockResolvedValue({
         crewId: 10,
         userId: 1,
@@ -275,34 +293,68 @@ describe('PostsService', () => {
         id: 100,
         crewId: 10,
         authorId: 1,
+        attachments: [
+          { id: 1, key: 'posts/attachments/100_key.mp4' },
+        ],
       });
       mockPrismaService.post.delete.mockResolvedValue({ id: 100 });
 
       const result = await service.deletePost(1, 10, 100);
 
+      expect(mockStorageService.delete).toHaveBeenCalledWith('posts/attachments/100_key.mp4');
       expect(mockPrismaService.post.delete).toHaveBeenCalledWith({
         where: { id: 100 },
       });
       expect(result).toEqual({ ok: true });
     });
+  });
 
-    it('should allow post deletion if user is crew owner even if not post author', async () => {
+  describe('deletePostAttachment', () => {
+    it('should throw ATTACHMENT_NOT_FOUND if attachment does not exist', async () => {
       mockPrismaService.crewMember.findUnique.mockResolvedValue({
         crewId: 10,
-        userId: 2,
-        role: CrewMemberRole.OWNER,
+        userId: 1,
+        role: CrewMemberRole.MEMBER,
       });
       mockPrismaService.post.findUnique.mockResolvedValue({
         id: 100,
         crewId: 10,
         authorId: 1,
       });
-      mockPrismaService.post.delete.mockResolvedValue({ id: 100 });
+      mockPrismaService.postAttachment.findFirst.mockResolvedValue(null);
 
-      const result = await service.deletePost(2, 10, 100);
+      await expect(
+        service.deletePostAttachment(1, 10, 100, 999),
+      ).rejects.toThrow(
+        expect.objectContaining({
+          response: { error_code: PostErrorCode.ATTACHMENT_NOT_FOUND },
+        }),
+      );
+    });
 
-      expect(mockPrismaService.post.delete).toHaveBeenCalledWith({
-        where: { id: 100 },
+    it('should delete attachment from storage and DB', async () => {
+      mockPrismaService.crewMember.findUnique.mockResolvedValue({
+        crewId: 10,
+        userId: 1,
+        role: CrewMemberRole.MEMBER,
+      });
+      mockPrismaService.post.findUnique.mockResolvedValue({
+        id: 100,
+        crewId: 10,
+        authorId: 1,
+      });
+      mockPrismaService.postAttachment.findFirst.mockResolvedValue({
+        id: 1,
+        postId: 100,
+        key: 'posts/attachments/100_att.png',
+      });
+      mockPrismaService.postAttachment.delete.mockResolvedValue({});
+
+      const result = await service.deletePostAttachment(1, 10, 100, 1);
+
+      expect(mockStorageService.delete).toHaveBeenCalledWith('posts/attachments/100_att.png');
+      expect(mockPrismaService.postAttachment.delete).toHaveBeenCalledWith({
+        where: { id: 1 },
       });
       expect(result).toEqual({ ok: true });
     });

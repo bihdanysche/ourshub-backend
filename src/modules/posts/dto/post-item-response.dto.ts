@@ -1,3 +1,4 @@
+import { PostAttachmentResponseDto } from './post-attachment-response.dto';
 import { PostAuthorResponseDto } from './post-author-response.dto';
 
 export class PostItemResponseDto {
@@ -5,6 +6,7 @@ export class PostItemResponseDto {
   content: string;
   youIsAuthor: boolean;
   author: PostAuthorResponseDto;
+  attachments: PostAttachmentResponseDto[];
   createdAt: Date;
   updatedAt: Date;
 }

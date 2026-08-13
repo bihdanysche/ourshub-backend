@@ -57,6 +57,7 @@ export const ModelName = {
   CrewMember: 'CrewMember',
   CrewInvitationLink: 'CrewInvitationLink',
   Post: 'Post',
+  PostAttachment: 'PostAttachment',
   Split: 'Split',
   SplitExpense: 'SplitExpense',
   SplitMember: 'SplitMember',
@@ -152,6 +153,19 @@ export const PostScalarFieldEnum = {
 } as const
 
 export type PostScalarFieldEnum = (typeof PostScalarFieldEnum)[keyof typeof PostScalarFieldEnum]
+
+
+export const PostAttachmentScalarFieldEnum = {
+  id: 'id',
+  postId: 'postId',
+  key: 'key',
+  name: 'name',
+  mimeType: 'mimeType',
+  size: 'size',
+  createdAt: 'createdAt'
+} as const
+
+export type PostAttachmentScalarFieldEnum = (typeof PostAttachmentScalarFieldEnum)[keyof typeof PostAttachmentScalarFieldEnum]
 
 
 export const SplitScalarFieldEnum = {

@@ -31,6 +31,9 @@ import {
 import { GeoIpService } from './services/geoip.service';
 import { TelegramOidcService } from './telegram/telegram-oidc.service';
 import { TelegramIdTokenClaims } from './telegram/telegram.types';
+import { randomUUID } from 'crypto';
+import { processAndValidateImage } from 'src/common/utils/media-helper.util';
+import { StorageService } from 'src/modules/storage/storage.service';
 import {
   clearAuthCookies,
   clearOidcCookies,
@@ -46,6 +49,7 @@ export class AuthService {
     private readonly telegram: TelegramOidcService,
     private readonly jwtService: JwtService,
     private readonly geoIpService: GeoIpService,
+    private readonly storageService: StorageService,
   ) {}
 
   async loginViaTelegram(req: Request, res: Response, inv_code?: string) {
@@ -415,5 +419,71 @@ export class AuthService {
     });
 
     setAuthCookies(res, accessToken, refreshToken);
+  }
+
+  async uploadAvatar(
+    userId: number,
+    file: Express.Multer.File,
+  ): Promise<{ ok: true }> {
+    const processed = await processAndValidateImage(file, {
+      maxSizeBytes: 15 * 1024 * 1024,
+      targetAspectRatio: 1,
+      errorCodes: {
+        IMAGE_REQUIRED: AuthErrorCode.IMAGE_REQUIRED,
+        INVALID_IMAGE_FORMAT: AuthErrorCode.INVALID_IMAGE_FORMAT,
+        IMAGE_TOO_LARGE: AuthErrorCode.IMAGE_TOO_LARGE,
+        INVALID_IMAGE_ASPECT_RATIO: AuthErrorCode.INVALID_IMAGE_ASPECT_RATIO,
+      },
+    });
+
+    const user = await this.prisma.user.findUnique({
+      where: { id: userId },
+    });
+
+    if (!user) {
+      throw new NotFoundException({
+        error_code: CommonErrorCode.NOT_FOUND,
+      });
+    }
+
+    if (user.avatar) {
+      await this.storageService.delete(user.avatar);
+    }
+
+    const key = `users/avatars/${userId}_${randomUUID()}.${processed.extension}`;
+    await this.storageService.uploadBuffer(
+      processed.buffer,
+      key,
+      processed.contentType,
+    );
+
+    await this.prisma.user.update({
+      where: { id: userId },
+      data: { avatar: key },
+    });
+
+    return { ok: true };
+  }
+
+  async deleteAvatar(userId: number): Promise<{ ok: true }> {
+    const user = await this.prisma.user.findUnique({
+      where: { id: userId },
+    });
+
+    if (!user) {
+      throw new NotFoundException({
+        error_code: CommonErrorCode.NOT_FOUND,
+      });
+    }
+
+    if (user.avatar) {
+      await this.storageService.delete(user.avatar);
+      await this.prisma.user.update({
+        where: { id: userId },
+        data: { avatar: null },
+      });
+    }
+
+    return { ok: true };
   }
 }

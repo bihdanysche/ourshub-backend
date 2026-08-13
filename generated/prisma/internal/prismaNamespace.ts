@@ -403,6 +403,7 @@ export const ModelName = {
   CrewMember: 'CrewMember',
   CrewInvitationLink: 'CrewInvitationLink',
   Post: 'Post',
+  PostAttachment: 'PostAttachment',
   Split: 'Split',
   SplitExpense: 'SplitExpense',
   SplitMember: 'SplitMember',
@@ -423,7 +424,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "user" | "session" | "crew" | "crewMember" | "crewInvitationLink" | "post" | "split" | "splitExpense" | "splitMember" | "expensePayHistory" | "expenseRequest"
+    modelProps: "user" | "session" | "crew" | "crewMember" | "crewInvitationLink" | "post" | "postAttachment" | "split" | "splitExpense" | "splitMember" | "expensePayHistory" | "expenseRequest"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -868,6 +869,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         count: {
           args: Prisma.PostCountArgs<ExtArgs>
           result: runtime.Types.Utils.Optional<Prisma.PostCountAggregateOutputType> | number
+        }
+      }
+    }
+    PostAttachment: {
+      payload: Prisma.$PostAttachmentPayload<ExtArgs>
+      fields: Prisma.PostAttachmentFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.PostAttachmentFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PostAttachmentPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.PostAttachmentFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PostAttachmentPayload>
+        }
+        findFirst: {
+          args: Prisma.PostAttachmentFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PostAttachmentPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.PostAttachmentFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PostAttachmentPayload>
+        }
+        findMany: {
+          args: Prisma.PostAttachmentFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PostAttachmentPayload>[]
+        }
+        create: {
+          args: Prisma.PostAttachmentCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PostAttachmentPayload>
+        }
+        createMany: {
+          args: Prisma.PostAttachmentCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.PostAttachmentCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PostAttachmentPayload>[]
+        }
+        delete: {
+          args: Prisma.PostAttachmentDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PostAttachmentPayload>
+        }
+        update: {
+          args: Prisma.PostAttachmentUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PostAttachmentPayload>
+        }
+        deleteMany: {
+          args: Prisma.PostAttachmentDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.PostAttachmentUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.PostAttachmentUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PostAttachmentPayload>[]
+        }
+        upsert: {
+          args: Prisma.PostAttachmentUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PostAttachmentPayload>
+        }
+        aggregate: {
+          args: Prisma.PostAttachmentAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregatePostAttachment>
+        }
+        groupBy: {
+          args: Prisma.PostAttachmentGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.PostAttachmentGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.PostAttachmentCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.PostAttachmentCountAggregateOutputType> | number
         }
       }
     }
@@ -1354,6 +1429,19 @@ export const PostScalarFieldEnum = {
 export type PostScalarFieldEnum = (typeof PostScalarFieldEnum)[keyof typeof PostScalarFieldEnum]
 
 
+export const PostAttachmentScalarFieldEnum = {
+  id: 'id',
+  postId: 'postId',
+  key: 'key',
+  name: 'name',
+  mimeType: 'mimeType',
+  size: 'size',
+  createdAt: 'createdAt'
+} as const
+
+export type PostAttachmentScalarFieldEnum = (typeof PostAttachmentScalarFieldEnum)[keyof typeof PostAttachmentScalarFieldEnum]
+
+
 export const SplitScalarFieldEnum = {
   id: 'id',
   title: 'title',
@@ -1695,6 +1783,7 @@ export type GlobalOmitConfig = {
   crewMember?: Prisma.CrewMemberOmit
   crewInvitationLink?: Prisma.CrewInvitationLinkOmit
   post?: Prisma.PostOmit
+  postAttachment?: Prisma.PostAttachmentOmit
   split?: Prisma.SplitOmit
   splitExpense?: Prisma.SplitExpenseOmit
   splitMember?: Prisma.SplitMemberOmit

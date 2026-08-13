@@ -101,19 +101,35 @@ model CrewInvitationLink {
 }
 
 model Post {
-  id        Int      @id @default(autoincrement())
-  authorId  Int      @map("author_id")
-  crewId    Int      @map("crew_id")
+  id        Int              @id @default(autoincrement())
+  authorId  Int              @map("author_id")
+  crewId    Int              @map("crew_id")
   content   String
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @updatedAt @map("updated_at")
+  createdAt DateTime         @default(now()) @map("created_at")
+  updatedAt DateTime         @updatedAt @map("updated_at")
 
-  author    User     @relation(fields: [authorId], references: [id], onDelete: Cascade)
-  crew      Crew     @relation(fields: [crewId], references: [id], onDelete: Cascade)
+  author      User             @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  crew        Crew             @relation(fields: [crewId], references: [id], onDelete: Cascade)
+  attachments PostAttachment[]
 
   @@index([crewId])
   @@index([authorId])
   @@map("posts")
+}
+
+model PostAttachment {
+  id        Int      @id @default(autoincrement())
+  postId    Int      @map("post_id")
+  key       String
+  name      String
+  mimeType  String   @map("mime_type")
+  size      Int
+  createdAt DateTime @default(now()) @map("created_at")
+
+  post      Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
+
+  @@index([postId])
+  @@map("post_attachments")
 }
 
 model Split {

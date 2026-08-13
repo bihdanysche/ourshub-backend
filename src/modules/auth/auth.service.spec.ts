@@ -3,6 +3,7 @@ import { JwtService } from '@nestjs/jwt';
 import { Test, TestingModule } from '@nestjs/testing';
 import type { Request, Response } from 'express';
 import { PrismaService } from 'src/prisma/prisma.service';
+import { StorageService } from 'src/modules/storage/storage.service';
 import { AuthService } from './auth.service';
 import {
   ACCESS_TOKEN_COOKIE,
@@ -74,6 +75,13 @@ describe('AuthService', () => {
     lookupLocation: jest.fn().mockReturnValue('Kyiv, UA'),
   };
 
+  const mockStorageService = {
+    upload: jest.fn(),
+    uploadBuffer: jest.fn().mockResolvedValue('key'),
+    get: jest.fn(),
+    delete: jest.fn().mockResolvedValue(undefined),
+  };
+
   beforeEach(async () => {
     jest.clearAllMocks();
     process.env.FRONTEND_URI = 'http://localhost:3000';
@@ -86,6 +94,7 @@ describe('AuthService', () => {
         { provide: TelegramOidcService, useValue: mockTelegramService },
         { provide: JwtService, useValue: mockJwtService },
         { provide: GeoIpService, useValue: mockGeoIpService },
+        { provide: StorageService, useValue: mockStorageService },
       ],
     }).compile();
 
@@ -416,6 +425,28 @@ describe('AuthService', () => {
           userId: mockUser.id,
           id: { not: mockSession.id },
         },
+      });
+    });
+  });
+
+  describe('deleteAvatar', () => {
+    it('should delete existing avatar key from storage and clear user avatar in db', async () => {
+      mockPrismaService.user.findUnique.mockResolvedValue({
+        ...mockUser,
+        avatar: 'users/avatars/1_old.png',
+      });
+      mockPrismaService.user.update = jest.fn().mockResolvedValue({
+        ...mockUser,
+        avatar: null,
+      });
+
+      const result = await service.deleteAvatar(1);
+
+      expect(result).toEqual({ ok: true });
+      expect(mockStorageService.delete).toHaveBeenCalledWith('users/avatars/1_old.png');
+      expect(mockPrismaService.user.update).toHaveBeenCalledWith({
+        where: { id: 1 },
+        data: { avatar: null },
       });
     });
   });

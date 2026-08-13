@@ -7,6 +7,7 @@ import { HealthModule } from './modules/health/health.module';
 import { MeModule } from './modules/me/me.module';
 import { PostsModule } from './modules/posts/posts.module';
 import { SplitsModule } from './modules/splits/splits.module';
+import { StorageModule } from './modules/storage/storage.module';
 import { PrismaModule } from './prisma/prisma.module';
 
 @Module({
@@ -15,6 +16,7 @@ import { PrismaModule } from './prisma/prisma.module';
       isGlobal: true,
     }),
     PrismaModule,
+    StorageModule,
     ThrottlerModule.forRoot([
       {
         ttl: 60000,

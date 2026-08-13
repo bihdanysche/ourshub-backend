@@ -10,7 +10,10 @@ import {
   Post,
   Put,
   Query,
+  UploadedFile,
+  UseInterceptors,
 } from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express';
 import { PaginatedResponseDto } from 'src/common/dto/pagination/paginated-response.dto';
 import { AuthRequired } from 'src/modules/auth/decorators/auth-required.decorator';
 import { CurrentUser } from 'src/modules/auth/decorators/current-user.decorator';
@@ -79,6 +82,42 @@ export class CrewsController {
     @Query() query: GetCrewMembersQueryDto,
   ): Promise<PaginatedResponseDto<CrewMemberResponseDto>> {
     return await this.crewsService.getCrewMembers(userId, id, query);
+  }
+
+  @Post(':crewId/avatar')
+  @UseInterceptors(FileInterceptor('file'))
+  async uploadCrewAvatar(
+    @CurrentUser('id') userId: number,
+    @Param('crewId', ParseIntPipe) crewId: number,
+    @UploadedFile() file?: Express.Multer.File,
+  ): Promise<{ ok: true }> {
+    return await this.crewsService.uploadCrewAvatar(userId, crewId, file!);
+  }
+
+  @Post(':crewId/cover')
+  @UseInterceptors(FileInterceptor('file'))
+  async uploadCrewCover(
+    @CurrentUser('id') userId: number,
+    @Param('crewId', ParseIntPipe) crewId: number,
+    @UploadedFile() file?: Express.Multer.File,
+  ): Promise<{ ok: true }> {
+    return await this.crewsService.uploadCrewCover(userId, crewId, file!);
+  }
+
+  @Delete(':crewId/avatar')
+  async deleteCrewAvatar(
+    @CurrentUser('id') userId: number,
+    @Param('crewId', ParseIntPipe) crewId: number,
+  ): Promise<{ ok: true }> {
+    return await this.crewsService.deleteCrewAvatar(userId, crewId);
+  }
+
+  @Delete(':crewId/cover')
+  async deleteCrewCover(
+    @CurrentUser('id') userId: number,
+    @Param('crewId', ParseIntPipe) crewId: number,
+  ): Promise<{ ok: true }> {
+    return await this.crewsService.deleteCrewCover(userId, crewId);
   }
 
   @Put(':crewId/members/:memberId/alias')

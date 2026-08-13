@@ -1,11 +1,15 @@
 import {
+  BadRequestException,
   ForbiddenException,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
+import { randomUUID } from 'crypto';
 import { PaginatedResponseDto } from 'src/common/dto/pagination/paginated-response.dto';
 import { CrewMemberRole } from 'src/modules/crews/enums/crew-member-role.enum';
+import { StorageService } from 'src/modules/storage/storage.service';
 import { PrismaService } from 'src/prisma/prisma.service';
+import { POST_LIMITS } from './constants/posts.constants';
 import { CreatePostDto } from './dto/create-post.dto';
 import { GetPostsQueryDto } from './dto/get-posts-query.dto';
 import { PostItemResponseDto } from './dto/post-item-response.dto';
@@ -14,7 +18,10 @@ import { PostErrorCode } from './errors/post-error.code.enum';
 
 @Injectable()
 export class PostsService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly storageService: StorageService,
+  ) {}
 
   async getPosts(
     userId: number,
@@ -55,6 +62,9 @@ export class PostsService {
             },
           },
         },
+        attachments: {
+          orderBy: { createdAt: 'asc' },
+        },
       },
       orderBy: { createdAt: 'desc' },
       skip: query.skip,
@@ -72,6 +82,14 @@ export class PostsService {
         alias: post.author.crewMembers[0]?.alias ?? null,
         avatar: post.author.avatar,
       },
+      attachments: post.attachments.map((att) => ({
+        id: att.id,
+        key: att.key,
+        name: att.name,
+        mimeType: att.mimeType,
+        size: att.size,
+        createdAt: att.createdAt,
+      })),
       createdAt: post.createdAt,
       updatedAt: post.updatedAt,
     }));
@@ -95,6 +113,7 @@ export class PostsService {
     userId: number,
     crewId: number,
     dto: CreatePostDto,
+    files?: Express.Multer.File[],
   ): Promise<{ ok: true }> {
     const currentMember = await this.prisma.crewMember.findUnique({
       where: {
@@ -111,13 +130,50 @@ export class PostsService {
       });
     }
 
-    await this.prisma.post.create({
+    if (files && files.length > 0) {
+      if (files.length > POST_LIMITS.MAX_ATTACHMENTS_PER_POST) {
+        throw new BadRequestException({
+          error_code: PostErrorCode.MAX_ATTACHMENTS_EXCEEDED,
+        });
+      }
+
+      for (const file of files) {
+        if (file.size > POST_LIMITS.MAX_ATTACHMENT_SIZE_BYTES) {
+          throw new BadRequestException({
+            error_code: PostErrorCode.ATTACHMENT_TOO_LARGE,
+          });
+        }
+      }
+    }
+
+    const post = await this.prisma.post.create({
       data: {
         crewId,
         authorId: userId,
         content: dto.content,
       },
     });
+
+    if (files && files.length > 0) {
+      for (const file of files) {
+        const key = `posts/attachments/${post.id}_${randomUUID()}_${file.originalname}`;
+        await this.storageService.uploadBuffer(
+          file.buffer,
+          key,
+          file.mimetype,
+        );
+
+        await this.prisma.postAttachment.create({
+          data: {
+            postId: post.id,
+            key,
+            name: file.originalname,
+            mimeType: file.mimetype,
+            size: file.size,
+          },
+        });
+      }
+    }
 
     return { ok: true };
   }
@@ -127,6 +183,8 @@ export class PostsService {
     crewId: number,
     postId: number,
     dto: UpdatePostDto,
+    files?: Express.Multer.File[],
+    removeAttachmentIds?: number[],
   ): Promise<{ ok: true }> {
     const currentMember = await this.prisma.crewMember.findUnique({
       where: {
@@ -145,6 +203,7 @@ export class PostsService {
 
     const post = await this.prisma.post.findUnique({
       where: { id: postId },
+      include: { attachments: true },
     });
 
     if (!post || post.crewId !== crewId) {
@@ -159,12 +218,77 @@ export class PostsService {
       });
     }
 
+    let remainingAttachments = post.attachments;
+
+    if (removeAttachmentIds && removeAttachmentIds.length > 0) {
+      const idsToRemove = new Set(removeAttachmentIds);
+      const attachmentsToDelete = post.attachments.filter((att) =>
+        idsToRemove.has(att.id),
+      );
+
+      for (const att of attachmentsToDelete) {
+        await this.storageService.delete(att.key);
+      }
+
+      await this.prisma.postAttachment.deleteMany({
+        where: {
+          id: { in: Array.from(idsToRemove) },
+          postId,
+        },
+      });
+
+      remainingAttachments = post.attachments.filter(
+        (att) => !idsToRemove.has(att.id),
+      );
+    }
+
+    const newFilesCount = files ? files.length : 0;
+    if (
+      remainingAttachments.length + newFilesCount >
+      POST_LIMITS.MAX_ATTACHMENTS_PER_POST
+    ) {
+      throw new BadRequestException({
+        error_code: PostErrorCode.MAX_ATTACHMENTS_EXCEEDED,
+      });
+    }
+
+    if (files && files.length > 0) {
+      for (const file of files) {
+        if (file.size > POST_LIMITS.MAX_ATTACHMENT_SIZE_BYTES) {
+          throw new BadRequestException({
+            error_code: PostErrorCode.ATTACHMENT_TOO_LARGE,
+          });
+        }
+      }
+    }
+
     await this.prisma.post.update({
       where: { id: postId },
       data: {
         content: dto.content,
       },
     });
+
+    if (files && files.length > 0) {
+      for (const file of files) {
+        const key = `posts/attachments/${post.id}_${randomUUID()}_${file.originalname}`;
+        await this.storageService.uploadBuffer(
+          file.buffer,
+          key,
+          file.mimetype,
+        );
+
+        await this.prisma.postAttachment.create({
+          data: {
+            postId: post.id,
+            key,
+            name: file.originalname,
+            mimeType: file.mimetype,
+            size: file.size,
+          },
+        });
+      }
+    }
 
     return { ok: true };
   }
@@ -173,6 +297,139 @@ export class PostsService {
     userId: number,
     crewId: number,
     postId: number,
+  ): Promise<{ ok: true }> {
+    const currentMember = await this.prisma.crewMember.findUnique({
+      where: {
+        crewId_userId: {
+          crewId,
+          userId,
+        },
+      },
+    });
+
+    if (!currentMember) {
+      throw new NotFoundException({
+        error_code: PostErrorCode.CREW_NOT_FOUND,
+      });
+    }
+
+    const post = await this.prisma.post.findUnique({
+      where: { id: postId },
+      include: { attachments: true },
+    });
+
+    if (!post || post.crewId !== crewId) {
+      throw new NotFoundException({
+        error_code: PostErrorCode.POST_NOT_FOUND,
+      });
+    }
+
+    const isAuthor = post.authorId === userId;
+    const isOwner = currentMember.role === CrewMemberRole.OWNER;
+
+    if (!isAuthor && !isOwner) {
+      throw new ForbiddenException({
+        error_code: PostErrorCode.ONLY_AUTHOR_OR_OWNER_CAN_DELETE_POST,
+      });
+    }
+
+    for (const att of post.attachments) {
+      await this.storageService.delete(att.key);
+    }
+
+    await this.prisma.post.delete({
+      where: { id: postId },
+    });
+
+    return { ok: true };
+  }
+
+  async uploadPostAttachments(
+    userId: number,
+    crewId: number,
+    postId: number,
+    files: Express.Multer.File[],
+  ): Promise<{ ok: true }> {
+    const currentMember = await this.prisma.crewMember.findUnique({
+      where: {
+        crewId_userId: {
+          crewId,
+          userId,
+        },
+      },
+    });
+
+    if (!currentMember) {
+      throw new NotFoundException({
+        error_code: PostErrorCode.CREW_NOT_FOUND,
+      });
+    }
+
+    const post = await this.prisma.post.findUnique({
+      where: { id: postId },
+      include: { attachments: true },
+    });
+
+    if (!post || post.crewId !== crewId) {
+      throw new NotFoundException({
+        error_code: PostErrorCode.POST_NOT_FOUND,
+      });
+    }
+
+    if (post.authorId !== userId) {
+      throw new ForbiddenException({
+        error_code: PostErrorCode.ONLY_AUTHOR_CAN_EDIT_POST,
+      });
+    }
+
+    if (!files || files.length === 0) {
+      return { ok: true };
+    }
+
+    if (
+      post.attachments.length + files.length >
+      POST_LIMITS.MAX_ATTACHMENTS_PER_POST
+    ) {
+      throw new BadRequestException({
+        error_code: PostErrorCode.MAX_ATTACHMENTS_EXCEEDED,
+      });
+    }
+
+    for (const file of files) {
+      if (file.size > POST_LIMITS.MAX_ATTACHMENT_SIZE_BYTES) {
+        throw new BadRequestException({
+          error_code: PostErrorCode.ATTACHMENT_TOO_LARGE,
+        });
+      }
+    }
+
+    for (const file of files) {
+      const key = `posts/attachments/${post.id}_${randomUUID()}_${file.originalname}`;
+      await this.storageService.uploadBuffer(
+        file.buffer,
+        key,
+        file.mimetype,
+      );
+
+      await this.prisma.postAttachment.create({
+        data: {
+          postId: post.id,
+          key,
+          name: file.originalname,
+          mimeType: file.mimetype,
+          size: file.size,
+        },
+      });
+    }
+
+    return { ok: true };
+  }
+
+  async deletePostAttachment(
+    userId: number,
+    crewId: number,
+    postId: number,
+    attachmentId: number,
   ): Promise<{ ok: true }> {
     const currentMember = await this.prisma.crewMember.findUnique({
       where: {
@@ -204,12 +461,27 @@ export class PostsService {
 
     if (!isAuthor && !isOwner) {
       throw new ForbiddenException({
-        error_code: PostErrorCode.ONLY_AUTHOR_OR_OWNER_CAN_DELETE_POST,
+        error_code: PostErrorCode.ONLY_AUTHOR_CAN_EDIT_POST,
       });
     }
 
-    await this.prisma.post.delete({
-      where: { id: postId },
+    const attachment = await this.prisma.postAttachment.findFirst({
+      where: {
+        id: attachmentId,
+        postId,
+      },
+    });
+
+    if (!attachment) {
+      throw new NotFoundException({
+        error_code: PostErrorCode.ATTACHMENT_NOT_FOUND,
+      });
+    }
+
+    await this.storageService.delete(attachment.key);
+
+    await this.prisma.postAttachment.delete({
+      where: { id: attachment.id },
     });
 
     return { ok: true };

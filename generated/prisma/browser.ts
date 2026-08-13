@@ -48,6 +48,11 @@ export type CrewInvitationLink = Prisma.CrewInvitationLinkModel
  */
 export type Post = Prisma.PostModel
 /**
+ * Model PostAttachment
+ * 
+ */
+export type PostAttachment = Prisma.PostAttachmentModel
+/**
  * Model Split
  * 
  */

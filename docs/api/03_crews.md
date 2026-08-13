@@ -15,6 +15,10 @@
 | `POST` | `/crews/invitations/:code/join` | `@AuthRequired()` | Joins crew via invite UUID with optional alias |
 | `GET` | `/crews/:id` | `@AuthRequired()` | Returns detailed crew info (includes `inviteCode` only for `OWNER`) |
 | `GET` | `/crews/:id/members` | `@AuthRequired()` | Returns paginated list of crew members |
+| `POST` | `/crews/:crewId/avatar` | `@AuthRequired()` | Uploads crew avatar (only `OWNER`, max 20MB, 1:1 ratio, HEIC converted to PNG) |
+| `POST` | `/crews/:crewId/cover` | `@AuthRequired()` | Uploads crew cover image (only `OWNER`, max 20MB, 3:1 ratio, HEIC converted to PNG) |
+| `DELETE` | `/crews/:crewId/avatar` | `@AuthRequired()` | Removes crew avatar from storage and DB (only `OWNER`) |
+| `DELETE` | `/crews/:crewId/cover` | `@AuthRequired()` | Removes crew cover from storage and DB (only `OWNER`) |
 | `PUT` | `/crews/:crewId/members/:memberId/alias` | `@AuthRequired()` | Updates or resets local alias for a crew member |
 | `DELETE` | `/crews/:crewId/members/:memberId` | `@AuthRequired()` | Kicks a member (only `OWNER`) or leaves the crew (`MEMBER`) |
 | `PATCH` | `/crews/:id` | `@AuthRequired()` | Updates the crew title (only `OWNER`) |
@@ -380,7 +384,11 @@ Deletes the crew and cascades deletion to all members and invitation links.
 | `CREW_IS_FULL` | `400` | Crew has reached the maximum of 15 members. | Inform user that the group is at full capacity. |
 | `USER_CREWS_LIMIT_REACHED` | `400` | User has reached the maximum of 10 crews. | Prompt user to leave an existing crew before creating or joining a new one. |
 | `ONLY_OWNER_CAN_DELETE_CREW` | `403` | Non-owner attempted to delete the crew. | Hide or disable delete crew button for non-owners. |
-| `ONLY_OWNER_CAN_UPDATE_CREW` | `403` | Non-owner attempted to update the crew title. | Hide or disable edit crew title UI for non-owners. |
+| `ONLY_OWNER_CAN_UPDATE_CREW` | `403` | Non-owner attempted to update crew title or media. | Hide or disable edit crew UI for non-owners. |
+| `IMAGE_REQUIRED` | `400` | No image file was attached in `multipart/form-data`. | Attach a valid image file under key `file`. |
+| `INVALID_IMAGE_FORMAT` | `400` | Unsupported file format (only `png`, `jpg`, `jpeg`, `heic` allowed). | Choose a supported image file format. |
+| `IMAGE_TOO_LARGE` | `400` | Attached file exceeds size limit (20 MB for crew avatar/cover). | Compress image or select a smaller file. |
+| `INVALID_IMAGE_ASPECT_RATIO` | `400` | Image aspect ratio mismatch (1:1 for avatar, 3:1 for cover). | Crop image to the required aspect ratio before upload. |
 | `ONLY_OWNER_CAN_KICK_MEMBERS` | `403` | Non-owner attempted to kick another member. | Hide or disable kick button for non-owners. |
 | `CANNOT_EDIT_OTHER_MEMBER_ALIAS` | `403` | Non-owner attempted to edit another member's alias. | Restrict alias editing UI to own user or owner role. |
 | `CANNOT_LEAVE_AS_OWNER` | `400` | Owner attempted to leave the crew instead of deleting it. | Direct owner to the delete crew option. |

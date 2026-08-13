@@ -8,6 +8,7 @@ import {
   Patch,
   Post,
   Query,
+  UploadedFiles,
   UseInterceptors,
 } from '@nestjs/common';
 import { AnyFilesInterceptor } from '@nestjs/platform-express';
@@ -40,8 +41,9 @@ export class PostsController {
     @CurrentUser('id') userId: number,
     @Param('crewId', ParseIntPipe) crewId: number,
     @Body() dto: CreatePostDto,
+    @UploadedFiles() files?: Express.Multer.File[],
   ): Promise<{ ok: true }> {
-    return await this.postsService.createPost(userId, crewId, dto);
+    return await this.postsService.createPost(userId, crewId, dto, files);
   }
 
   @Patch(':crewId/:postId')
@@ -50,9 +52,61 @@ export class PostsController {
     @CurrentUser('id') userId: number,
     @Param('crewId', ParseIntPipe) crewId: number,
     @Param('postId', ParseIntPipe) postId: number,
-    @Body() dto: UpdatePostDto,
+    @Body() dto: UpdatePostDto & { removeAttachmentIds?: string | number[] },
+    @UploadedFiles() files?: Express.Multer.File[],
   ): Promise<{ ok: true }> {
-    return await this.postsService.updatePost(userId, crewId, postId, dto);
+    let removeIds: number[] | undefined;
+    if (dto.removeAttachmentIds) {
+      if (typeof dto.removeAttachmentIds === 'string') {
+        try {
+          removeIds = JSON.parse(dto.removeAttachmentIds);
+        } catch {
+          removeIds = dto.removeAttachmentIds.split(',').map(Number).filter(Boolean);
+        }
+      } else if (Array.isArray(dto.removeAttachmentIds)) {
+        removeIds = dto.removeAttachmentIds.map(Number);
+      }
+    }
+
+    return await this.postsService.updatePost(
+      userId,
+      crewId,
+      postId,
+      dto,
+      files,
+      removeIds,
+    );
+  }
+
+  @Post(':crewId/:postId/attachments')
+  @UseInterceptors(AnyFilesInterceptor())
+  async uploadPostAttachments(
+    @CurrentUser('id') userId: number,
+    @Param('crewId', ParseIntPipe) crewId: number,
+    @Param('postId', ParseIntPipe) postId: number,
+    @UploadedFiles() files: Express.Multer.File[],
+  ): Promise<{ ok: true }> {
+    return await this.postsService.uploadPostAttachments(
+      userId,
+      crewId,
+      postId,
+      files,
+    );
+  }
+
+  @Delete(':crewId/:postId/attachments/:attachmentId')
+  async deletePostAttachment(
+    @CurrentUser('id') userId: number,
+    @Param('crewId', ParseIntPipe) crewId: number,
+    @Param('postId', ParseIntPipe) postId: number,
+    @Param('attachmentId', ParseIntPipe) attachmentId: number,
+  ): Promise<{ ok: true }> {
+    return await this.postsService.deletePostAttachment(
+      userId,
+      crewId,
+      postId,
+      attachmentId,
+    );
   }
 
   @Delete(':crewId/:postId')
