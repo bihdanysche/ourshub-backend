@@ -59,12 +59,17 @@ export class PostsController {
     if (dto.removeAttachmentIds) {
       if (typeof dto.removeAttachmentIds === 'string') {
         try {
-          removeIds = JSON.parse(dto.removeAttachmentIds);
+          const parsed = JSON.parse(dto.removeAttachmentIds) as unknown;
+          if (Array.isArray(parsed)) {
+            removeIds = parsed.map(Number).filter((n) => !isNaN(n));
+          } else {
+            removeIds = dto.removeAttachmentIds.split(',').map(Number).filter((n) => !isNaN(n));
+          }
         } catch {
-          removeIds = dto.removeAttachmentIds.split(',').map(Number).filter(Boolean);
+          removeIds = dto.removeAttachmentIds.split(',').map(Number).filter((n) => !isNaN(n));
         }
       } else if (Array.isArray(dto.removeAttachmentIds)) {
-        removeIds = dto.removeAttachmentIds.map(Number);
+        removeIds = dto.removeAttachmentIds.map(Number).filter((n) => !isNaN(n));
       }
     }
 

@@ -1,4 +1,4 @@
-import { BadRequestException, NotFoundException, UnauthorizedException } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { Test, TestingModule } from '@nestjs/testing';
 import type { Request, Response } from 'express';
@@ -82,8 +82,20 @@ describe('AuthService', () => {
     delete: jest.fn().mockResolvedValue(undefined),
   };
 
+  const mockConfigService = {
+    getOrThrow: jest.fn((key: string) => {
+      if (key === 'FRONTEND_URI') return 'http://localhost:3000';
+      return '';
+    }),
+    get: jest.fn((key: string) => {
+      if (key === 'FRONTEND_URI') return 'http://localhost:3000';
+      return undefined;
+    }),
+  };
+
   beforeEach(async () => {
     jest.clearAllMocks();
+    mockJwtService.verifyAsync.mockRejectedValue(new Error('token expired'));
     process.env.FRONTEND_URI = 'http://localhost:3000';
     process.env.NODE_ENV = 'development';
 
@@ -95,6 +107,7 @@ describe('AuthService', () => {
         { provide: JwtService, useValue: mockJwtService },
         { provide: GeoIpService, useValue: mockGeoIpService },
         { provide: StorageService, useValue: mockStorageService },
+        { provide: ConfigService, useValue: mockConfigService },
       ],
     }).compile();
 
@@ -226,22 +239,12 @@ describe('AuthService', () => {
       } as unknown as Request;
       const mockRes = { cookie: jest.fn(), clearCookie: jest.fn() } as unknown as Response;
 
-      mockJwtService.verifyAsync.mockImplementation((token: string) => {
-        if (token === 'valid_access_token') {
-          return Promise.resolve({ sub: 1, sid: 10 });
-        }
-        return Promise.reject(new Error('invalid token'));
-      });
+      mockJwtService.verifyAsync.mockResolvedValueOnce({ sub: 1, sid: 10 });
 
-      try {
-        await service.refresh(mockReq, mockRes);
-        expect(true).toBe(false);
-      } catch (err) {
-        expect(err).toBeInstanceOf(BadRequestException);
-        expect((err as BadRequestException).getResponse()).toEqual({
-          error_code: AuthErrorCode.ACCESS_TOKEN_NOT_EXPIRED,
-        });
-      }
+      const promise = service.refresh(mockReq, mockRes);
+      await expect(promise).rejects.toMatchObject({
+        response: { error_code: AuthErrorCode.ACCESS_TOKEN_NOT_EXPIRED },
+      });
     });
 
     it('should throw UnauthorizedException REFRESH_TOKEN_REQUIRED if no refresh token provided', async () => {
@@ -250,9 +253,10 @@ describe('AuthService', () => {
       } as unknown as Request;
       const mockRes = { clearCookie: jest.fn() } as unknown as Response;
 
-      await expect(service.refresh(mockReq, mockRes)).rejects.toThrow(
-        UnauthorizedException,
-      );
+      const promise = service.refresh(mockReq, mockRes);
+      await expect(promise).rejects.toMatchObject({
+        response: { error_code: AuthErrorCode.REFRESH_TOKEN_REQUIRED },
+      });
     });
 
     it('should rotate tokens and update session if refresh token and session are valid', async () => {
@@ -264,19 +268,13 @@ describe('AuthService', () => {
       } as unknown as Request;
       const mockRes = { cookie: jest.fn(), clearCookie: jest.fn() } as unknown as Response;
 
-      mockJwtService.verifyAsync.mockImplementation((token: string) => {
-        if (token === 'expired_token') {
-          return Promise.reject(new Error('jwt expired'));
-        }
-        if (token === 'valid_refresh_token') {
-          return Promise.resolve({
-            sub: 1,
-            sid: 10,
-            type: 'refresh',
-          });
-        }
-        return Promise.reject(new Error('unknown token'));
-      });
+      mockJwtService.verifyAsync
+        .mockRejectedValueOnce(new Error('jwt expired'))
+        .mockResolvedValueOnce({
+          sub: 1,
+          sid: 10,
+          type: 'refresh',
+        });
 
       mockPrismaService.session.findUnique.mockResolvedValue(mockSession);
       mockPrismaService.session.update.mockResolvedValue(mockSession);
@@ -370,13 +368,8 @@ describe('AuthService', () => {
 
   describe('shutdownSession', () => {
     it('should throw BadRequestException CANNOT_SHUTDOWN_CURRENT_SESSION if trying to shut down current session', async () => {
-      await expect(
-        service.shutdownSession(mockUser, mockSession, mockSession.id),
-      ).rejects.toThrow(BadRequestException);
-
-      await expect(
-        service.shutdownSession(mockUser, mockSession, mockSession.id),
-      ).rejects.toMatchObject({
+      const promise = service.shutdownSession(mockUser, mockSession, mockSession.id);
+      await expect(promise).rejects.toMatchObject({
         response: {
           error_code: AuthErrorCode.CANNOT_SHUTDOWN_CURRENT_SESSION,
         },
@@ -386,13 +379,8 @@ describe('AuthService', () => {
     it('should throw NotFoundException SESSION_NOT_FOUND if session not found or belongs to another user', async () => {
       mockPrismaService.session.findUnique.mockResolvedValue(null);
 
-      await expect(
-        service.shutdownSession(mockUser, mockSession, 999),
-      ).rejects.toThrow(NotFoundException);
-
-      await expect(
-        service.shutdownSession(mockUser, mockSession, 999),
-      ).rejects.toMatchObject({
+      const promise = service.shutdownSession(mockUser, mockSession, 999);
+      await expect(promise).rejects.toMatchObject({
         response: {
           error_code: AuthErrorCode.SESSION_NOT_FOUND,
         },

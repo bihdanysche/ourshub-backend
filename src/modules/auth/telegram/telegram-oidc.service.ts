@@ -1,4 +1,5 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { createRemoteJWKSet, jwtVerify } from 'jose';
 import { createHash, randomBytes } from 'node:crypto';
 
@@ -7,9 +8,15 @@ import { TelegramIdTokenClaims, TelegramTokenResponse } from './telegram.types';
 
 @Injectable()
 export class TelegramOidcService {
-  private readonly clientId = process.env.TG_CLIENT_ID!;
-  private readonly clientSecret = process.env.TG_CLIENT_SECRET!;
-  private readonly redirectUri = process.env.TG_REDIRECT_URI!;
+  private readonly clientId: string;
+  private readonly clientSecret: string;
+  private readonly redirectUri: string;
+
+  constructor(private readonly configService: ConfigService) {
+    this.clientId = this.configService.getOrThrow<string>('TG_CLIENT_ID');
+    this.clientSecret = this.configService.getOrThrow<string>('TG_CLIENT_SECRET');
+    this.redirectUri = this.configService.getOrThrow<string>('TG_REDIRECT_URI');
+  }
 
   private readonly authorizationUrl = 'https://oauth.telegram.org/auth';
   private readonly tokenUrl = 'https://oauth.telegram.org/token';

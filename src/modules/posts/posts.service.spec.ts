@@ -1,4 +1,3 @@
-import { BadRequestException, ForbiddenException, NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { CrewMemberRole } from 'src/modules/crews/enums/crew-member-role.enum';
 import { StorageService } from 'src/modules/storage/storage.service';
@@ -58,13 +57,10 @@ describe('PostsService', () => {
     it('should throw CREW_NOT_FOUND if user is not a member of the crew', async () => {
       mockPrismaService.crewMember.findUnique.mockResolvedValue(null);
 
-      await expect(
-        service.getPosts(1, 10, { page: 1, limit: 20, skip: 0 }),
-      ).rejects.toThrow(
-        expect.objectContaining({
-          response: { error_code: PostErrorCode.CREW_NOT_FOUND },
-        }),
-      );
+      const promise = service.getPosts(1, 10, { page: 1, limit: 20, skip: 0 });
+      await expect(promise).rejects.toMatchObject({
+        response: { error_code: PostErrorCode.CREW_NOT_FOUND },
+      });
     });
 
     it('should return paginated posts with author info, attachments, and youIsAuthor flag', async () => {
@@ -145,13 +141,10 @@ describe('PostsService', () => {
     it('should throw CREW_NOT_FOUND if user is not a member of the crew', async () => {
       mockPrismaService.crewMember.findUnique.mockResolvedValue(null);
 
-      await expect(
-        service.createPost(1, 10, { content: 'New Post' }),
-      ).rejects.toThrow(
-        expect.objectContaining({
-          response: { error_code: PostErrorCode.CREW_NOT_FOUND },
-        }),
-      );
+      const promise = service.createPost(1, 10, { content: 'Hello' });
+      await expect(promise).rejects.toMatchObject({
+        response: { error_code: PostErrorCode.CREW_NOT_FOUND },
+      });
     });
 
     it('should throw ATTACHMENT_TOO_LARGE if file exceeds 200MB', async () => {
@@ -168,13 +161,10 @@ describe('PostsService', () => {
         buffer: Buffer.from('test'),
       } as Express.Multer.File;
 
-      await expect(
-        service.createPost(1, 10, { content: 'New Post' }, [hugeFile]),
-      ).rejects.toThrow(
-        expect.objectContaining({
-          response: { error_code: PostErrorCode.ATTACHMENT_TOO_LARGE },
-        }),
-      );
+      const promise = service.createPost(1, 10, { content: 'Hello' }, [hugeFile]);
+      await expect(promise).rejects.toMatchObject({
+        response: { error_code: PostErrorCode.ATTACHMENT_TOO_LARGE },
+      });
     });
 
     it('should throw MAX_ATTACHMENTS_EXCEEDED if more than 15 files are attached', async () => {
@@ -191,13 +181,10 @@ describe('PostsService', () => {
         buffer: Buffer.from('test'),
       })) as Express.Multer.File[];
 
-      await expect(
-        service.createPost(1, 10, { content: 'New Post' }, files),
-      ).rejects.toThrow(
-        expect.objectContaining({
-          response: { error_code: PostErrorCode.MAX_ATTACHMENTS_EXCEEDED },
-        }),
-      );
+      const promise = service.createPost(1, 10, { content: 'Hello' }, files);
+      await expect(promise).rejects.toMatchObject({
+        response: { error_code: PostErrorCode.MAX_ATTACHMENTS_EXCEEDED },
+      });
     });
 
     it('should create post with attachments and return ok: true', async () => {
@@ -246,13 +233,10 @@ describe('PostsService', () => {
         attachments: [],
       });
 
-      await expect(
-        service.updatePost(2, 10, 100, { content: 'Updated Post' }),
-      ).rejects.toThrow(
-        expect.objectContaining({
-          response: { error_code: PostErrorCode.ONLY_AUTHOR_CAN_EDIT_POST },
-        }),
-      );
+      const promise = service.updatePost(2, 10, 100, { content: 'New text' });
+      await expect(promise).rejects.toMatchObject({
+        response: { error_code: PostErrorCode.ONLY_AUTHOR_CAN_EDIT_POST },
+      });
     });
 
     it('should update post content if user is author', async () => {
@@ -323,13 +307,10 @@ describe('PostsService', () => {
       });
       mockPrismaService.postAttachment.findFirst.mockResolvedValue(null);
 
-      await expect(
-        service.deletePostAttachment(1, 10, 100, 999),
-      ).rejects.toThrow(
-        expect.objectContaining({
-          response: { error_code: PostErrorCode.ATTACHMENT_NOT_FOUND },
-        }),
-      );
+      const promise = service.deletePostAttachment(1, 10, 100, 999);
+      await expect(promise).rejects.toMatchObject({
+        response: { error_code: PostErrorCode.ATTACHMENT_NOT_FOUND },
+      });
     });
 
     it('should delete attachment from storage and DB', async () => {

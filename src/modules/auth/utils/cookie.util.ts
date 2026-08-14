@@ -9,6 +9,13 @@ import {
   TG_OAUTH_VERIFIER_COOKIE,
 } from '../constants/auth.constants';
 
+const isSecureCookie = (): boolean => {
+  if (process.env.COOKIE_SECURE !== undefined) {
+    return process.env.COOKIE_SECURE === 'true';
+  }
+  return true;
+};
+
 export function getCookie(req: Request, name: string): string | undefined {
   return req.cookies?.[name] as string | undefined;
 }
@@ -18,9 +25,11 @@ export function setAuthCookies(
   accessToken: string,
   refreshToken: string,
 ): void {
+  const secure = isSecureCookie();
+
   res.cookie(ACCESS_TOKEN_COOKIE, accessToken, {
     httpOnly: true,
-    secure: true,
+    secure,
     sameSite: 'lax',
     maxAge: REFRESH_TOKEN_TTL_MS,
     path: '/',
@@ -28,7 +37,7 @@ export function setAuthCookies(
 
   res.cookie(REFRESH_TOKEN_COOKIE, refreshToken, {
     httpOnly: true,
-    secure: true,
+    secure,
     sameSite: 'lax',
     maxAge: REFRESH_TOKEN_TTL_MS,
     path: '/auth',
@@ -36,15 +45,17 @@ export function setAuthCookies(
 }
 
 export function clearAuthCookies(res: Response): void {
+  const secure = isSecureCookie();
+
   res.clearCookie(ACCESS_TOKEN_COOKIE, {
     httpOnly: true,
-    secure: true,
+    secure,
     sameSite: 'lax',
     path: '/',
   });
   res.clearCookie(REFRESH_TOKEN_COOKIE, {
     httpOnly: true,
-    secure: true,
+    secure,
     sameSite: 'lax',
     path: '/auth',
   });
@@ -58,7 +69,7 @@ export function setOidcCookies(
 ): void {
   const options = {
     httpOnly: true,
-    secure: true,
+    secure: isSecureCookie(),
     sameSite: 'lax' as const,
     maxAge: TG_OAUTH_TTL_MS,
     path: '/auth/telegram',
@@ -76,7 +87,7 @@ export function setOidcCookies(
 export function clearOidcCookies(res: Response): void {
   const options = {
     httpOnly: true,
-    secure: true,
+    secure: isSecureCookie(),
     sameSite: 'lax' as const,
     path: '/auth/telegram',
   };

@@ -14,7 +14,9 @@ export class CreateExpenseRequestDto {
 
   @IsOptional()
   @IsString()
-  @Transform(({ value }) => (typeof value === 'string' ? value.trim() : value))
+  @Transform(({ value }: { value: unknown }) =>
+    typeof value === 'string' ? value.trim() : value,
+  )
   @Length(1, 50)
   msg?: string;
 }

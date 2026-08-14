@@ -4,6 +4,7 @@ import {
   NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import type { Request, Response } from 'express';
 import { CommonErrorCode } from 'src/common/errors/common-error-code.enum';
@@ -50,6 +51,7 @@ export class AuthService {
     private readonly jwtService: JwtService,
     private readonly geoIpService: GeoIpService,
     private readonly storageService: StorageService,
+    private readonly configService: ConfigService,
   ) {}
 
   async loginViaTelegram(req: Request, res: Response, inv_code?: string) {
@@ -59,14 +61,6 @@ export class AuthService {
         error: AuthErrorCode.ALREADY_AUTHENTICATED,
       });
     }
-
-    // const stateInCookie = getCookie(req, TG_OAUTH_STATE_COOKIE);
-    // const verifierInCookie = getCookie(req, TG_OAUTH_VERIFIER_COOKIE);
-    // if (stateInCookie || verifierInCookie) {
-    //   return this.redirectToFrontend(res, {
-    //     error: AuthErrorCode.AUTH_ALREADY_IN_PROGRESS,
-    //   });
-    // }
 
     const state = this.telegram.generateState();
     const { verifier, challenge } = this.telegram.generatePkce();
@@ -386,9 +380,10 @@ export class AuthService {
     res: Response,
     result: ({ success: true } | { error: string }) & { inv_code?: string },
   ) {
+    const frontendUri = this.configService.getOrThrow<string>('FRONTEND_URI');
     const origin = result.inv_code
-      ? `${process.env.FRONTEND_URI!}/join-crew/${result.inv_code}`
-      : process.env.FRONTEND_URI!;
+      ? `${frontendUri}/join-crew/${result.inv_code}`
+      : frontendUri;
     const url =
       'error' in result
         ? `${origin}/?auth=error&code=${result.error}`

@@ -1,4 +1,3 @@
-import { BadRequestException, ForbiddenException, NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { CrewMemberRole } from 'src/modules/crews/enums/crew-member-role.enum';
 import { PrismaService } from 'src/prisma/prisma.service';
@@ -77,18 +76,15 @@ describe('SplitsService', () => {
     it('should throw CREW_NOT_FOUND if user is not in crew', async () => {
       mockPrismaService.crewMember.findUnique.mockResolvedValue(null);
 
-      await expect(
-        service.getSplits(1, 10, {
-          page: 1,
-          limit: 10,
-          skip: 0,
-          isArchived: false,
-        }),
-      ).rejects.toThrow(
-        expect.objectContaining({
-          response: { error_code: SplitErrorCode.CREW_NOT_FOUND },
-        }),
-      );
+      const promise = service.getSplits(1, 10, {
+        page: 1,
+        limit: 10,
+        skip: 0,
+        isArchived: false,
+      });
+      await expect(promise).rejects.toMatchObject({
+        response: { error_code: SplitErrorCode.CREW_NOT_FOUND },
+      });
     });
 
     it('should return paginated splits for crew member', async () => {
@@ -160,25 +156,22 @@ describe('SplitsService', () => {
       });
       mockPrismaService.crewMember.count.mockResolvedValue(1); // 1 found, expected 2
 
-      await expect(
-        service.createSplit(1, 10, {
-          title: 'Drinks',
-          expenses: [
-            {
-              title: 'Beer',
-              spender: 1,
-              members: [
-                { user: 1, paid: 10, mustPay: 10 },
-                { user: 99, paid: 0, mustPay: 10 },
-              ],
-            },
-          ],
-        }),
-      ).rejects.toThrow(
-        expect.objectContaining({
-          response: { error_code: SplitErrorCode.NOT_A_CREW_MEMBER },
-        }),
-      );
+      const promise = service.createSplit(1, 10, {
+        title: 'Drinks',
+        expenses: [
+          {
+            title: 'Beer',
+            spender: 1,
+            members: [
+              { user: 1, paid: 10, mustPay: 10 },
+              { user: 99, paid: 0, mustPay: 10 },
+            ],
+          },
+        ],
+      });
+      await expect(promise).rejects.toMatchObject({
+        response: { error_code: SplitErrorCode.NOT_A_CREW_MEMBER },
+      });
     });
 
     it('should create split with transaction', async () => {
@@ -188,13 +181,13 @@ describe('SplitsService', () => {
         role: CrewMemberRole.MEMBER,
       });
       mockPrismaService.crewMember.count.mockResolvedValue(2);
-      mockPrismaService.$transaction.mockImplementation(async (cb) => {
+      mockPrismaService.$transaction.mockImplementation(async (cb: (tx: unknown) => Promise<unknown>) => {
         const tx = {
           split: { create: jest.fn().mockResolvedValue({ id: 100 }) },
           splitExpense: { create: jest.fn().mockResolvedValue({ id: 200 }) },
           splitMember: { createMany: jest.fn().mockResolvedValue({ count: 2 }) },
         };
-        return await cb(tx);
+        return (await cb(tx));
       });
 
       const result = await service.createSplit(1, 10, {
@@ -234,13 +227,10 @@ describe('SplitsService', () => {
         spenderId: 1, // spender is 1, caller is 2
       });
 
-      await expect(
-        service.payOff(2, 100, 200, [{ user: 2, amount: 5 }]),
-      ).rejects.toThrow(
-        expect.objectContaining({
-          response: { error_code: SplitErrorCode.ONLY_SPENDER_CAN_MODIFY },
-        }),
-      );
+      const promise = service.payOff(2, 100, 200, [{ user: 2, amount: 5 }]);
+      await expect(promise).rejects.toMatchObject({
+        response: { error_code: SplitErrorCode.ONLY_SPENDER_CAN_MODIFY },
+      });
     });
 
     it('should throw PAYMENT_EXCEEDS_MUST_PAY if new paid amount exceeds mustPay', async () => {
@@ -261,7 +251,7 @@ describe('SplitsService', () => {
         spenderId: 1,
       });
 
-      mockPrismaService.$transaction.mockImplementation(async (cb) => {
+      mockPrismaService.$transaction.mockImplementation(async (cb: (tx: unknown) => Promise<unknown>) => {
         const tx = {
           splitMember: {
             findUnique: jest.fn().mockResolvedValue({
@@ -271,16 +261,13 @@ describe('SplitsService', () => {
             }),
           },
         };
-        return await cb(tx);
+        return (await cb(tx));
       });
 
-      await expect(
-        service.payOff(1, 100, 200, [{ user: 2, amount: 15 }]),
-      ).rejects.toThrow(
-        expect.objectContaining({
-          response: { error_code: SplitErrorCode.PAYMENT_EXCEEDS_MUST_PAY },
-        }),
-      );
+      const promise = service.payOff(1, 100, 200, [{ user: 2, amount: 15 }]);
+      await expect(promise).rejects.toMatchObject({
+        response: { error_code: SplitErrorCode.PAYMENT_EXCEEDS_MUST_PAY },
+      });
     });
   });
 
@@ -303,11 +290,10 @@ describe('SplitsService', () => {
         spenderId: 1,
       });
 
-      await expect(service.deleteExpense(1, 100, 200)).rejects.toThrow(
-        expect.objectContaining({
-          response: { error_code: SplitErrorCode.MIN_EXPENSES_REQUIRED },
-        }),
-      );
+      const promise = service.deleteExpense(1, 100, 200);
+      await expect(promise).rejects.toMatchObject({
+        response: { error_code: SplitErrorCode.MIN_EXPENSES_REQUIRED },
+      });
     });
   });
 
@@ -339,15 +325,12 @@ describe('SplitsService', () => {
         { amount: 15 }, // 15 already pending, remaining debt = 5
       ]);
 
-      await expect(
-        service.createExpenseRequest(2, 100, 200, { amount: 10 }),
-      ).rejects.toThrow(
-        expect.objectContaining({
-          response: {
-            error_code: SplitErrorCode.REQUEST_AMOUNT_EXCEEDS_REMAINING_DEBT,
-          },
-        }),
-      );
+      const promise = service.createExpenseRequest(2, 100, 200, { amount: 10 });
+      await expect(promise).rejects.toMatchObject({
+        response: {
+          error_code: SplitErrorCode.REQUEST_AMOUNT_EXCEEDS_REMAINING_DEBT,
+        },
+      });
     });
 
     it('should create expense request successfully', async () => {
@@ -406,13 +389,10 @@ describe('SplitsService', () => {
         expense: { id: 200, spenderId: 1 }, // spender is 1, caller is 2
       });
 
-      await expect(
-        service.acceptExpenseRequest(2, 100, 200, 1),
-      ).rejects.toThrow(
-        expect.objectContaining({
-          response: { error_code: SplitErrorCode.ONLY_SPENDER_CAN_MODIFY },
-        }),
-      );
+      const promise = service.acceptExpenseRequest(2, 100, 200, 1);
+      await expect(promise).rejects.toMatchObject({
+        response: { error_code: SplitErrorCode.ONLY_SPENDER_CAN_MODIFY },
+      });
     });
   });
 });

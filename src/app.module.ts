@@ -10,10 +10,13 @@ import { SplitsModule } from './modules/splits/splits.module';
 import { StorageModule } from './modules/storage/storage.module';
 import { PrismaModule } from './prisma/prisma.module';
 
+import { validateEnv } from './common/config/env.config';
+
 @Module({
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
+      validate: validateEnv,
     }),
     PrismaModule,
     StorageModule,

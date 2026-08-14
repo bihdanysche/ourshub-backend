@@ -210,7 +210,7 @@ export class CrewsService {
       });
     }
 
-    const where: any = { crewId };
+    const where: Prisma.CrewMemberWhereInput = { crewId };
 
     if (query.q) {
       where.OR = [

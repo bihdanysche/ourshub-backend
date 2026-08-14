@@ -45,8 +45,9 @@ export class StorageController {
 
       const body = file.Body as NodeJS.ReadableStream;
       body.pipe(res);
-    } catch (err: any) {
-      if (err?.$metadata?.httpStatusCode === 416) {
+    } catch (err: unknown) {
+      const httpStatusCode = (err as { $metadata?: { httpStatusCode?: number } })?.$metadata?.httpStatusCode;
+      if (httpStatusCode === 416) {
         return res.sendStatus(416);
       }
       return res.sendStatus(404);

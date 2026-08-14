@@ -5,20 +5,32 @@ import {
   S3Client,
 } from '@aws-sdk/client-s3';
 import { Injectable } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class StorageService {
-  private readonly client = new S3Client({
-    endpoint: `http://${process.env.MINIO_ENDPOINT}:${process.env.MINIO_PORT}`,
-    region: 'us-east-1',
-    credentials: {
-      accessKeyId: process.env.MINIO_ACCESS_KEY!,
-      secretAccessKey: process.env.MINIO_SECRET_KEY!,
-    },
-    forcePathStyle: true,
-  });
+  private readonly client: S3Client;
+  private readonly bucket: string;
 
-  private readonly bucket = process.env.MINIO_BUCKET!;
+  constructor(private readonly configService: ConfigService) {
+    const endpoint = this.configService.getOrThrow<string>('MINIO_ENDPOINT');
+    const port = this.configService.getOrThrow<number>('MINIO_PORT');
+    const accessKeyId =
+      this.configService.getOrThrow<string>('MINIO_ACCESS_KEY');
+    const secretAccessKey =
+      this.configService.getOrThrow<string>('MINIO_SECRET_KEY');
+    this.bucket = this.configService.getOrThrow<string>('MINIO_BUCKET');
+
+    this.client = new S3Client({
+      endpoint: `http://${endpoint}:${port}`,
+      region: 'us-east-1',
+      credentials: {
+        accessKeyId,
+        secretAccessKey,
+      },
+      forcePathStyle: true,
+    });
+  }
 
   async upload(file: Express.Multer.File, key: string) {
     await this.client.send(
@@ -69,7 +81,7 @@ export class StorageService {
         }),
       );
     } catch {
-      // Ignore error if file does not exist in MinIO or deletion fails
+      /* empty */
     }
   }
 }
