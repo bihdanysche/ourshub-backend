@@ -28,18 +28,18 @@ export type AggregateUser = {
 
 export type UserAvgAggregateOutputType = {
   id: number | null
-  tg_id: number | null
 }
 
 export type UserSumAggregateOutputType = {
   id: number | null
-  tg_id: number | null
 }
 
 export type UserMinAggregateOutputType = {
   id: number | null
-  tg_id: number | null
+  tg_id: string | null
+  tg_sub: string | null
   username: string | null
+  username_lower: string | null
   name: string | null
   avatar: string | null
   createdAt: Date | null
@@ -47,8 +47,10 @@ export type UserMinAggregateOutputType = {
 
 export type UserMaxAggregateOutputType = {
   id: number | null
-  tg_id: number | null
+  tg_id: string | null
+  tg_sub: string | null
   username: string | null
+  username_lower: string | null
   name: string | null
   avatar: string | null
   createdAt: Date | null
@@ -57,7 +59,9 @@ export type UserMaxAggregateOutputType = {
 export type UserCountAggregateOutputType = {
   id: number
   tg_id: number
+  tg_sub: number
   username: number
+  username_lower: number
   name: number
   avatar: number
   createdAt: number
@@ -67,18 +71,18 @@ export type UserCountAggregateOutputType = {
 
 export type UserAvgAggregateInputType = {
   id?: true
-  tg_id?: true
 }
 
 export type UserSumAggregateInputType = {
   id?: true
-  tg_id?: true
 }
 
 export type UserMinAggregateInputType = {
   id?: true
   tg_id?: true
+  tg_sub?: true
   username?: true
+  username_lower?: true
   name?: true
   avatar?: true
   createdAt?: true
@@ -87,7 +91,9 @@ export type UserMinAggregateInputType = {
 export type UserMaxAggregateInputType = {
   id?: true
   tg_id?: true
+  tg_sub?: true
   username?: true
+  username_lower?: true
   name?: true
   avatar?: true
   createdAt?: true
@@ -96,7 +102,9 @@ export type UserMaxAggregateInputType = {
 export type UserCountAggregateInputType = {
   id?: true
   tg_id?: true
+  tg_sub?: true
   username?: true
+  username_lower?: true
   name?: true
   avatar?: true
   createdAt?: true
@@ -191,8 +199,10 @@ export type UserGroupByArgs<ExtArgs extends runtime.Types.Extensions.InternalArg
 
 export type UserGroupByOutputType = {
   id: number
-  tg_id: number
-  username: string
+  tg_id: string
+  tg_sub: string
+  username: string | null
+  username_lower: string | null
   name: string
   avatar: string | null
   createdAt: Date
@@ -223,38 +233,67 @@ export type UserWhereInput = {
   OR?: Prisma.UserWhereInput[]
   NOT?: Prisma.UserWhereInput | Prisma.UserWhereInput[]
   id?: Prisma.IntFilter<"User"> | number
-  tg_id?: Prisma.IntFilter<"User"> | number
-  username?: Prisma.StringFilter<"User"> | string
+  tg_id?: Prisma.StringFilter<"User"> | string
+  tg_sub?: Prisma.StringFilter<"User"> | string
+  username?: Prisma.StringNullableFilter<"User"> | string | null
+  username_lower?: Prisma.StringNullableFilter<"User"> | string | null
   name?: Prisma.StringFilter<"User"> | string
   avatar?: Prisma.StringNullableFilter<"User"> | string | null
   createdAt?: Prisma.DateTimeFilter<"User"> | Date | string
+  sessions?: Prisma.SessionListRelationFilter
+  crewMembers?: Prisma.CrewMemberListRelationFilter
+  posts?: Prisma.PostListRelationFilter
+  splitExpenses?: Prisma.SplitExpenseListRelationFilter
+  splitMembers?: Prisma.SplitMemberListRelationFilter
+  payHistories?: Prisma.ExpensePayHistoryListRelationFilter
+  expenseRequests?: Prisma.ExpenseRequestListRelationFilter
 }
 
 export type UserOrderByWithRelationInput = {
   id?: Prisma.SortOrder
   tg_id?: Prisma.SortOrder
-  username?: Prisma.SortOrder
+  tg_sub?: Prisma.SortOrder
+  username?: Prisma.SortOrderInput | Prisma.SortOrder
+  username_lower?: Prisma.SortOrderInput | Prisma.SortOrder
   name?: Prisma.SortOrder
   avatar?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
+  sessions?: Prisma.SessionOrderByRelationAggregateInput
+  crewMembers?: Prisma.CrewMemberOrderByRelationAggregateInput
+  posts?: Prisma.PostOrderByRelationAggregateInput
+  splitExpenses?: Prisma.SplitExpenseOrderByRelationAggregateInput
+  splitMembers?: Prisma.SplitMemberOrderByRelationAggregateInput
+  payHistories?: Prisma.ExpensePayHistoryOrderByRelationAggregateInput
+  expenseRequests?: Prisma.ExpenseRequestOrderByRelationAggregateInput
 }
 
 export type UserWhereUniqueInput = Prisma.AtLeast<{
   id?: number
-  tg_id?: number
-  username?: string
+  tg_id?: string
+  tg_sub?: string
+  username_lower?: string
   AND?: Prisma.UserWhereInput | Prisma.UserWhereInput[]
   OR?: Prisma.UserWhereInput[]
   NOT?: Prisma.UserWhereInput | Prisma.UserWhereInput[]
+  username?: Prisma.StringNullableFilter<"User"> | string | null
   name?: Prisma.StringFilter<"User"> | string
   avatar?: Prisma.StringNullableFilter<"User"> | string | null
   createdAt?: Prisma.DateTimeFilter<"User"> | Date | string
-}, "id" | "tg_id" | "username">
+  sessions?: Prisma.SessionListRelationFilter
+  crewMembers?: Prisma.CrewMemberListRelationFilter
+  posts?: Prisma.PostListRelationFilter
+  splitExpenses?: Prisma.SplitExpenseListRelationFilter
+  splitMembers?: Prisma.SplitMemberListRelationFilter
+  payHistories?: Prisma.ExpensePayHistoryListRelationFilter
+  expenseRequests?: Prisma.ExpenseRequestListRelationFilter
+}, "id" | "tg_id" | "tg_sub" | "username_lower">
 
 export type UserOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
   tg_id?: Prisma.SortOrder
-  username?: Prisma.SortOrder
+  tg_sub?: Prisma.SortOrder
+  username?: Prisma.SortOrderInput | Prisma.SortOrder
+  username_lower?: Prisma.SortOrderInput | Prisma.SortOrder
   name?: Prisma.SortOrder
   avatar?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -270,59 +309,101 @@ export type UserScalarWhereWithAggregatesInput = {
   OR?: Prisma.UserScalarWhereWithAggregatesInput[]
   NOT?: Prisma.UserScalarWhereWithAggregatesInput | Prisma.UserScalarWhereWithAggregatesInput[]
   id?: Prisma.IntWithAggregatesFilter<"User"> | number
-  tg_id?: Prisma.IntWithAggregatesFilter<"User"> | number
-  username?: Prisma.StringWithAggregatesFilter<"User"> | string
+  tg_id?: Prisma.StringWithAggregatesFilter<"User"> | string
+  tg_sub?: Prisma.StringWithAggregatesFilter<"User"> | string
+  username?: Prisma.StringNullableWithAggregatesFilter<"User"> | string | null
+  username_lower?: Prisma.StringNullableWithAggregatesFilter<"User"> | string | null
   name?: Prisma.StringWithAggregatesFilter<"User"> | string
   avatar?: Prisma.StringNullableWithAggregatesFilter<"User"> | string | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"User"> | Date | string
 }
 
 export type UserCreateInput = {
-  tg_id: number
-  username: string
+  tg_id: string
+  tg_sub: string
+  username?: string | null
+  username_lower?: string | null
   name: string
   avatar?: string | null
   createdAt?: Date | string
+  sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
+  crewMembers?: Prisma.CrewMemberCreateNestedManyWithoutUserInput
+  posts?: Prisma.PostCreateNestedManyWithoutAuthorInput
+  splitExpenses?: Prisma.SplitExpenseCreateNestedManyWithoutSpenderInput
+  splitMembers?: Prisma.SplitMemberCreateNestedManyWithoutUserInput
+  payHistories?: Prisma.ExpensePayHistoryCreateNestedManyWithoutUserInput
+  expenseRequests?: Prisma.ExpenseRequestCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateInput = {
   id?: number
-  tg_id: number
-  username: string
+  tg_id: string
+  tg_sub: string
+  username?: string | null
+  username_lower?: string | null
   name: string
   avatar?: string | null
   createdAt?: Date | string
+  sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
+  crewMembers?: Prisma.CrewMemberUncheckedCreateNestedManyWithoutUserInput
+  posts?: Prisma.PostUncheckedCreateNestedManyWithoutAuthorInput
+  splitExpenses?: Prisma.SplitExpenseUncheckedCreateNestedManyWithoutSpenderInput
+  splitMembers?: Prisma.SplitMemberUncheckedCreateNestedManyWithoutUserInput
+  payHistories?: Prisma.ExpensePayHistoryUncheckedCreateNestedManyWithoutUserInput
+  expenseRequests?: Prisma.ExpenseRequestUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserUpdateInput = {
-  tg_id?: Prisma.IntFieldUpdateOperationsInput | number
-  username?: Prisma.StringFieldUpdateOperationsInput | string
+  tg_id?: Prisma.StringFieldUpdateOperationsInput | string
+  tg_sub?: Prisma.StringFieldUpdateOperationsInput | string
+  username?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  username_lower?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   name?: Prisma.StringFieldUpdateOperationsInput | string
   avatar?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
+  crewMembers?: Prisma.CrewMemberUpdateManyWithoutUserNestedInput
+  posts?: Prisma.PostUpdateManyWithoutAuthorNestedInput
+  splitExpenses?: Prisma.SplitExpenseUpdateManyWithoutSpenderNestedInput
+  splitMembers?: Prisma.SplitMemberUpdateManyWithoutUserNestedInput
+  payHistories?: Prisma.ExpensePayHistoryUpdateManyWithoutUserNestedInput
+  expenseRequests?: Prisma.ExpenseRequestUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
-  tg_id?: Prisma.IntFieldUpdateOperationsInput | number
-  username?: Prisma.StringFieldUpdateOperationsInput | string
+  tg_id?: Prisma.StringFieldUpdateOperationsInput | string
+  tg_sub?: Prisma.StringFieldUpdateOperationsInput | string
+  username?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  username_lower?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   name?: Prisma.StringFieldUpdateOperationsInput | string
   avatar?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
+  crewMembers?: Prisma.CrewMemberUncheckedUpdateManyWithoutUserNestedInput
+  posts?: Prisma.PostUncheckedUpdateManyWithoutAuthorNestedInput
+  splitExpenses?: Prisma.SplitExpenseUncheckedUpdateManyWithoutSpenderNestedInput
+  splitMembers?: Prisma.SplitMemberUncheckedUpdateManyWithoutUserNestedInput
+  payHistories?: Prisma.ExpensePayHistoryUncheckedUpdateManyWithoutUserNestedInput
+  expenseRequests?: Prisma.ExpenseRequestUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateManyInput = {
   id?: number
-  tg_id: number
-  username: string
+  tg_id: string
+  tg_sub: string
+  username?: string | null
+  username_lower?: string | null
   name: string
   avatar?: string | null
   createdAt?: Date | string
 }
 
 export type UserUpdateManyMutationInput = {
-  tg_id?: Prisma.IntFieldUpdateOperationsInput | number
-  username?: Prisma.StringFieldUpdateOperationsInput | string
+  tg_id?: Prisma.StringFieldUpdateOperationsInput | string
+  tg_sub?: Prisma.StringFieldUpdateOperationsInput | string
+  username?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  username_lower?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   name?: Prisma.StringFieldUpdateOperationsInput | string
   avatar?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -330,8 +411,10 @@ export type UserUpdateManyMutationInput = {
 
 export type UserUncheckedUpdateManyInput = {
   id?: Prisma.IntFieldUpdateOperationsInput | number
-  tg_id?: Prisma.IntFieldUpdateOperationsInput | number
-  username?: Prisma.StringFieldUpdateOperationsInput | string
+  tg_id?: Prisma.StringFieldUpdateOperationsInput | string
+  tg_sub?: Prisma.StringFieldUpdateOperationsInput | string
+  username?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  username_lower?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   name?: Prisma.StringFieldUpdateOperationsInput | string
   avatar?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -340,7 +423,9 @@ export type UserUncheckedUpdateManyInput = {
 export type UserCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
   tg_id?: Prisma.SortOrder
+  tg_sub?: Prisma.SortOrder
   username?: Prisma.SortOrder
+  username_lower?: Prisma.SortOrder
   name?: Prisma.SortOrder
   avatar?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -348,13 +433,14 @@ export type UserCountOrderByAggregateInput = {
 
 export type UserAvgOrderByAggregateInput = {
   id?: Prisma.SortOrder
-  tg_id?: Prisma.SortOrder
 }
 
 export type UserMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
   tg_id?: Prisma.SortOrder
+  tg_sub?: Prisma.SortOrder
   username?: Prisma.SortOrder
+  username_lower?: Prisma.SortOrder
   name?: Prisma.SortOrder
   avatar?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -363,7 +449,9 @@ export type UserMaxOrderByAggregateInput = {
 export type UserMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
   tg_id?: Prisma.SortOrder
+  tg_sub?: Prisma.SortOrder
   username?: Prisma.SortOrder
+  username_lower?: Prisma.SortOrder
   name?: Prisma.SortOrder
   avatar?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -371,15 +459,11 @@ export type UserMinOrderByAggregateInput = {
 
 export type UserSumOrderByAggregateInput = {
   id?: Prisma.SortOrder
-  tg_id?: Prisma.SortOrder
 }
 
-export type IntFieldUpdateOperationsInput = {
-  set?: number
-  increment?: number
-  decrement?: number
-  multiply?: number
-  divide?: number
+export type UserScalarRelationFilter = {
+  is?: Prisma.UserWhereInput
+  isNot?: Prisma.UserWhereInput
 }
 
 export type StringFieldUpdateOperationsInput = {
@@ -394,21 +478,796 @@ export type DateTimeFieldUpdateOperationsInput = {
   set?: Date | string
 }
 
+export type IntFieldUpdateOperationsInput = {
+  set?: number
+  increment?: number
+  decrement?: number
+  multiply?: number
+  divide?: number
+}
+
+export type UserCreateNestedOneWithoutSessionsInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutSessionsInput, Prisma.UserUncheckedCreateWithoutSessionsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutSessionsInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserUpdateOneRequiredWithoutSessionsNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutSessionsInput, Prisma.UserUncheckedCreateWithoutSessionsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutSessionsInput
+  upsert?: Prisma.UserUpsertWithoutSessionsInput
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutSessionsInput, Prisma.UserUpdateWithoutSessionsInput>, Prisma.UserUncheckedUpdateWithoutSessionsInput>
+}
+
+export type UserCreateNestedOneWithoutCrewMembersInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutCrewMembersInput, Prisma.UserUncheckedCreateWithoutCrewMembersInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutCrewMembersInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserUpdateOneRequiredWithoutCrewMembersNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutCrewMembersInput, Prisma.UserUncheckedCreateWithoutCrewMembersInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutCrewMembersInput
+  upsert?: Prisma.UserUpsertWithoutCrewMembersInput
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutCrewMembersInput, Prisma.UserUpdateWithoutCrewMembersInput>, Prisma.UserUncheckedUpdateWithoutCrewMembersInput>
+}
+
+export type UserCreateNestedOneWithoutPostsInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutPostsInput, Prisma.UserUncheckedCreateWithoutPostsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutPostsInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserUpdateOneRequiredWithoutPostsNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutPostsInput, Prisma.UserUncheckedCreateWithoutPostsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutPostsInput
+  upsert?: Prisma.UserUpsertWithoutPostsInput
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutPostsInput, Prisma.UserUpdateWithoutPostsInput>, Prisma.UserUncheckedUpdateWithoutPostsInput>
+}
+
+export type UserCreateNestedOneWithoutSplitExpensesInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutSplitExpensesInput, Prisma.UserUncheckedCreateWithoutSplitExpensesInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutSplitExpensesInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserUpdateOneRequiredWithoutSplitExpensesNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutSplitExpensesInput, Prisma.UserUncheckedCreateWithoutSplitExpensesInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutSplitExpensesInput
+  upsert?: Prisma.UserUpsertWithoutSplitExpensesInput
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutSplitExpensesInput, Prisma.UserUpdateWithoutSplitExpensesInput>, Prisma.UserUncheckedUpdateWithoutSplitExpensesInput>
+}
+
+export type UserCreateNestedOneWithoutSplitMembersInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutSplitMembersInput, Prisma.UserUncheckedCreateWithoutSplitMembersInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutSplitMembersInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserUpdateOneRequiredWithoutSplitMembersNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutSplitMembersInput, Prisma.UserUncheckedCreateWithoutSplitMembersInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutSplitMembersInput
+  upsert?: Prisma.UserUpsertWithoutSplitMembersInput
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutSplitMembersInput, Prisma.UserUpdateWithoutSplitMembersInput>, Prisma.UserUncheckedUpdateWithoutSplitMembersInput>
+}
+
+export type UserCreateNestedOneWithoutPayHistoriesInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutPayHistoriesInput, Prisma.UserUncheckedCreateWithoutPayHistoriesInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutPayHistoriesInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserUpdateOneRequiredWithoutPayHistoriesNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutPayHistoriesInput, Prisma.UserUncheckedCreateWithoutPayHistoriesInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutPayHistoriesInput
+  upsert?: Prisma.UserUpsertWithoutPayHistoriesInput
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutPayHistoriesInput, Prisma.UserUpdateWithoutPayHistoriesInput>, Prisma.UserUncheckedUpdateWithoutPayHistoriesInput>
+}
+
+export type UserCreateNestedOneWithoutExpenseRequestsInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutExpenseRequestsInput, Prisma.UserUncheckedCreateWithoutExpenseRequestsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutExpenseRequestsInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserUpdateOneRequiredWithoutExpenseRequestsNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutExpenseRequestsInput, Prisma.UserUncheckedCreateWithoutExpenseRequestsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutExpenseRequestsInput
+  upsert?: Prisma.UserUpsertWithoutExpenseRequestsInput
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutExpenseRequestsInput, Prisma.UserUpdateWithoutExpenseRequestsInput>, Prisma.UserUncheckedUpdateWithoutExpenseRequestsInput>
+}
+
+export type UserCreateWithoutSessionsInput = {
+  tg_id: string
+  tg_sub: string
+  username?: string | null
+  username_lower?: string | null
+  name: string
+  avatar?: string | null
+  createdAt?: Date | string
+  crewMembers?: Prisma.CrewMemberCreateNestedManyWithoutUserInput
+  posts?: Prisma.PostCreateNestedManyWithoutAuthorInput
+  splitExpenses?: Prisma.SplitExpenseCreateNestedManyWithoutSpenderInput
+  splitMembers?: Prisma.SplitMemberCreateNestedManyWithoutUserInput
+  payHistories?: Prisma.ExpensePayHistoryCreateNestedManyWithoutUserInput
+  expenseRequests?: Prisma.ExpenseRequestCreateNestedManyWithoutUserInput
+}
+
+export type UserUncheckedCreateWithoutSessionsInput = {
+  id?: number
+  tg_id: string
+  tg_sub: string
+  username?: string | null
+  username_lower?: string | null
+  name: string
+  avatar?: string | null
+  createdAt?: Date | string
+  crewMembers?: Prisma.CrewMemberUncheckedCreateNestedManyWithoutUserInput
+  posts?: Prisma.PostUncheckedCreateNestedManyWithoutAuthorInput
+  splitExpenses?: Prisma.SplitExpenseUncheckedCreateNestedManyWithoutSpenderInput
+  splitMembers?: Prisma.SplitMemberUncheckedCreateNestedManyWithoutUserInput
+  payHistories?: Prisma.ExpensePayHistoryUncheckedCreateNestedManyWithoutUserInput
+  expenseRequests?: Prisma.ExpenseRequestUncheckedCreateNestedManyWithoutUserInput
+}
+
+export type UserCreateOrConnectWithoutSessionsInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutSessionsInput, Prisma.UserUncheckedCreateWithoutSessionsInput>
+}
+
+export type UserUpsertWithoutSessionsInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutSessionsInput, Prisma.UserUncheckedUpdateWithoutSessionsInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutSessionsInput, Prisma.UserUncheckedCreateWithoutSessionsInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutSessionsInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutSessionsInput, Prisma.UserUncheckedUpdateWithoutSessionsInput>
+}
+
+export type UserUpdateWithoutSessionsInput = {
+  tg_id?: Prisma.StringFieldUpdateOperationsInput | string
+  tg_sub?: Prisma.StringFieldUpdateOperationsInput | string
+  username?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  username_lower?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  avatar?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  crewMembers?: Prisma.CrewMemberUpdateManyWithoutUserNestedInput
+  posts?: Prisma.PostUpdateManyWithoutAuthorNestedInput
+  splitExpenses?: Prisma.SplitExpenseUpdateManyWithoutSpenderNestedInput
+  splitMembers?: Prisma.SplitMemberUpdateManyWithoutUserNestedInput
+  payHistories?: Prisma.ExpensePayHistoryUpdateManyWithoutUserNestedInput
+  expenseRequests?: Prisma.ExpenseRequestUpdateManyWithoutUserNestedInput
+}
+
+export type UserUncheckedUpdateWithoutSessionsInput = {
+  id?: Prisma.IntFieldUpdateOperationsInput | number
+  tg_id?: Prisma.StringFieldUpdateOperationsInput | string
+  tg_sub?: Prisma.StringFieldUpdateOperationsInput | string
+  username?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  username_lower?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  avatar?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  crewMembers?: Prisma.CrewMemberUncheckedUpdateManyWithoutUserNestedInput
+  posts?: Prisma.PostUncheckedUpdateManyWithoutAuthorNestedInput
+  splitExpenses?: Prisma.SplitExpenseUncheckedUpdateManyWithoutSpenderNestedInput
+  splitMembers?: Prisma.SplitMemberUncheckedUpdateManyWithoutUserNestedInput
+  payHistories?: Prisma.ExpensePayHistoryUncheckedUpdateManyWithoutUserNestedInput
+  expenseRequests?: Prisma.ExpenseRequestUncheckedUpdateManyWithoutUserNestedInput
+}
+
+export type UserCreateWithoutCrewMembersInput = {
+  tg_id: string
+  tg_sub: string
+  username?: string | null
+  username_lower?: string | null
+  name: string
+  avatar?: string | null
+  createdAt?: Date | string
+  sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
+  posts?: Prisma.PostCreateNestedManyWithoutAuthorInput
+  splitExpenses?: Prisma.SplitExpenseCreateNestedManyWithoutSpenderInput
+  splitMembers?: Prisma.SplitMemberCreateNestedManyWithoutUserInput
+  payHistories?: Prisma.ExpensePayHistoryCreateNestedManyWithoutUserInput
+  expenseRequests?: Prisma.ExpenseRequestCreateNestedManyWithoutUserInput
+}
+
+export type UserUncheckedCreateWithoutCrewMembersInput = {
+  id?: number
+  tg_id: string
+  tg_sub: string
+  username?: string | null
+  username_lower?: string | null
+  name: string
+  avatar?: string | null
+  createdAt?: Date | string
+  sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
+  posts?: Prisma.PostUncheckedCreateNestedManyWithoutAuthorInput
+  splitExpenses?: Prisma.SplitExpenseUncheckedCreateNestedManyWithoutSpenderInput
+  splitMembers?: Prisma.SplitMemberUncheckedCreateNestedManyWithoutUserInput
+  payHistories?: Prisma.ExpensePayHistoryUncheckedCreateNestedManyWithoutUserInput
+  expenseRequests?: Prisma.ExpenseRequestUncheckedCreateNestedManyWithoutUserInput
+}
+
+export type UserCreateOrConnectWithoutCrewMembersInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutCrewMembersInput, Prisma.UserUncheckedCreateWithoutCrewMembersInput>
+}
+
+export type UserUpsertWithoutCrewMembersInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutCrewMembersInput, Prisma.UserUncheckedUpdateWithoutCrewMembersInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutCrewMembersInput, Prisma.UserUncheckedCreateWithoutCrewMembersInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutCrewMembersInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutCrewMembersInput, Prisma.UserUncheckedUpdateWithoutCrewMembersInput>
+}
+
+export type UserUpdateWithoutCrewMembersInput = {
+  tg_id?: Prisma.StringFieldUpdateOperationsInput | string
+  tg_sub?: Prisma.StringFieldUpdateOperationsInput | string
+  username?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  username_lower?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  avatar?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
+  posts?: Prisma.PostUpdateManyWithoutAuthorNestedInput
+  splitExpenses?: Prisma.SplitExpenseUpdateManyWithoutSpenderNestedInput
+  splitMembers?: Prisma.SplitMemberUpdateManyWithoutUserNestedInput
+  payHistories?: Prisma.ExpensePayHistoryUpdateManyWithoutUserNestedInput
+  expenseRequests?: Prisma.ExpenseRequestUpdateManyWithoutUserNestedInput
+}
+
+export type UserUncheckedUpdateWithoutCrewMembersInput = {
+  id?: Prisma.IntFieldUpdateOperationsInput | number
+  tg_id?: Prisma.StringFieldUpdateOperationsInput | string
+  tg_sub?: Prisma.StringFieldUpdateOperationsInput | string
+  username?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  username_lower?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  avatar?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
+  posts?: Prisma.PostUncheckedUpdateManyWithoutAuthorNestedInput
+  splitExpenses?: Prisma.SplitExpenseUncheckedUpdateManyWithoutSpenderNestedInput
+  splitMembers?: Prisma.SplitMemberUncheckedUpdateManyWithoutUserNestedInput
+  payHistories?: Prisma.ExpensePayHistoryUncheckedUpdateManyWithoutUserNestedInput
+  expenseRequests?: Prisma.ExpenseRequestUncheckedUpdateManyWithoutUserNestedInput
+}
+
+export type UserCreateWithoutPostsInput = {
+  tg_id: string
+  tg_sub: string
+  username?: string | null
+  username_lower?: string | null
+  name: string
+  avatar?: string | null
+  createdAt?: Date | string
+  sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
+  crewMembers?: Prisma.CrewMemberCreateNestedManyWithoutUserInput
+  splitExpenses?: Prisma.SplitExpenseCreateNestedManyWithoutSpenderInput
+  splitMembers?: Prisma.SplitMemberCreateNestedManyWithoutUserInput
+  payHistories?: Prisma.ExpensePayHistoryCreateNestedManyWithoutUserInput
+  expenseRequests?: Prisma.ExpenseRequestCreateNestedManyWithoutUserInput
+}
+
+export type UserUncheckedCreateWithoutPostsInput = {
+  id?: number
+  tg_id: string
+  tg_sub: string
+  username?: string | null
+  username_lower?: string | null
+  name: string
+  avatar?: string | null
+  createdAt?: Date | string
+  sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
+  crewMembers?: Prisma.CrewMemberUncheckedCreateNestedManyWithoutUserInput
+  splitExpenses?: Prisma.SplitExpenseUncheckedCreateNestedManyWithoutSpenderInput
+  splitMembers?: Prisma.SplitMemberUncheckedCreateNestedManyWithoutUserInput
+  payHistories?: Prisma.ExpensePayHistoryUncheckedCreateNestedManyWithoutUserInput
+  expenseRequests?: Prisma.ExpenseRequestUncheckedCreateNestedManyWithoutUserInput
+}
+
+export type UserCreateOrConnectWithoutPostsInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutPostsInput, Prisma.UserUncheckedCreateWithoutPostsInput>
+}
+
+export type UserUpsertWithoutPostsInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutPostsInput, Prisma.UserUncheckedUpdateWithoutPostsInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutPostsInput, Prisma.UserUncheckedCreateWithoutPostsInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutPostsInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutPostsInput, Prisma.UserUncheckedUpdateWithoutPostsInput>
+}
+
+export type UserUpdateWithoutPostsInput = {
+  tg_id?: Prisma.StringFieldUpdateOperationsInput | string
+  tg_sub?: Prisma.StringFieldUpdateOperationsInput | string
+  username?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  username_lower?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  avatar?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
+  crewMembers?: Prisma.CrewMemberUpdateManyWithoutUserNestedInput
+  splitExpenses?: Prisma.SplitExpenseUpdateManyWithoutSpenderNestedInput
+  splitMembers?: Prisma.SplitMemberUpdateManyWithoutUserNestedInput
+  payHistories?: Prisma.ExpensePayHistoryUpdateManyWithoutUserNestedInput
+  expenseRequests?: Prisma.ExpenseRequestUpdateManyWithoutUserNestedInput
+}
+
+export type UserUncheckedUpdateWithoutPostsInput = {
+  id?: Prisma.IntFieldUpdateOperationsInput | number
+  tg_id?: Prisma.StringFieldUpdateOperationsInput | string
+  tg_sub?: Prisma.StringFieldUpdateOperationsInput | string
+  username?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  username_lower?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  avatar?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
+  crewMembers?: Prisma.CrewMemberUncheckedUpdateManyWithoutUserNestedInput
+  splitExpenses?: Prisma.SplitExpenseUncheckedUpdateManyWithoutSpenderNestedInput
+  splitMembers?: Prisma.SplitMemberUncheckedUpdateManyWithoutUserNestedInput
+  payHistories?: Prisma.ExpensePayHistoryUncheckedUpdateManyWithoutUserNestedInput
+  expenseRequests?: Prisma.ExpenseRequestUncheckedUpdateManyWithoutUserNestedInput
+}
+
+export type UserCreateWithoutSplitExpensesInput = {
+  tg_id: string
+  tg_sub: string
+  username?: string | null
+  username_lower?: string | null
+  name: string
+  avatar?: string | null
+  createdAt?: Date | string
+  sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
+  crewMembers?: Prisma.CrewMemberCreateNestedManyWithoutUserInput
+  posts?: Prisma.PostCreateNestedManyWithoutAuthorInput
+  splitMembers?: Prisma.SplitMemberCreateNestedManyWithoutUserInput
+  payHistories?: Prisma.ExpensePayHistoryCreateNestedManyWithoutUserInput
+  expenseRequests?: Prisma.ExpenseRequestCreateNestedManyWithoutUserInput
+}
+
+export type UserUncheckedCreateWithoutSplitExpensesInput = {
+  id?: number
+  tg_id: string
+  tg_sub: string
+  username?: string | null
+  username_lower?: string | null
+  name: string
+  avatar?: string | null
+  createdAt?: Date | string
+  sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
+  crewMembers?: Prisma.CrewMemberUncheckedCreateNestedManyWithoutUserInput
+  posts?: Prisma.PostUncheckedCreateNestedManyWithoutAuthorInput
+  splitMembers?: Prisma.SplitMemberUncheckedCreateNestedManyWithoutUserInput
+  payHistories?: Prisma.ExpensePayHistoryUncheckedCreateNestedManyWithoutUserInput
+  expenseRequests?: Prisma.ExpenseRequestUncheckedCreateNestedManyWithoutUserInput
+}
+
+export type UserCreateOrConnectWithoutSplitExpensesInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutSplitExpensesInput, Prisma.UserUncheckedCreateWithoutSplitExpensesInput>
+}
+
+export type UserUpsertWithoutSplitExpensesInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutSplitExpensesInput, Prisma.UserUncheckedUpdateWithoutSplitExpensesInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutSplitExpensesInput, Prisma.UserUncheckedCreateWithoutSplitExpensesInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutSplitExpensesInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutSplitExpensesInput, Prisma.UserUncheckedUpdateWithoutSplitExpensesInput>
+}
+
+export type UserUpdateWithoutSplitExpensesInput = {
+  tg_id?: Prisma.StringFieldUpdateOperationsInput | string
+  tg_sub?: Prisma.StringFieldUpdateOperationsInput | string
+  username?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  username_lower?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  avatar?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
+  crewMembers?: Prisma.CrewMemberUpdateManyWithoutUserNestedInput
+  posts?: Prisma.PostUpdateManyWithoutAuthorNestedInput
+  splitMembers?: Prisma.SplitMemberUpdateManyWithoutUserNestedInput
+  payHistories?: Prisma.ExpensePayHistoryUpdateManyWithoutUserNestedInput
+  expenseRequests?: Prisma.ExpenseRequestUpdateManyWithoutUserNestedInput
+}
+
+export type UserUncheckedUpdateWithoutSplitExpensesInput = {
+  id?: Prisma.IntFieldUpdateOperationsInput | number
+  tg_id?: Prisma.StringFieldUpdateOperationsInput | string
+  tg_sub?: Prisma.StringFieldUpdateOperationsInput | string
+  username?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  username_lower?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  avatar?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
+  crewMembers?: Prisma.CrewMemberUncheckedUpdateManyWithoutUserNestedInput
+  posts?: Prisma.PostUncheckedUpdateManyWithoutAuthorNestedInput
+  splitMembers?: Prisma.SplitMemberUncheckedUpdateManyWithoutUserNestedInput
+  payHistories?: Prisma.ExpensePayHistoryUncheckedUpdateManyWithoutUserNestedInput
+  expenseRequests?: Prisma.ExpenseRequestUncheckedUpdateManyWithoutUserNestedInput
+}
+
+export type UserCreateWithoutSplitMembersInput = {
+  tg_id: string
+  tg_sub: string
+  username?: string | null
+  username_lower?: string | null
+  name: string
+  avatar?: string | null
+  createdAt?: Date | string
+  sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
+  crewMembers?: Prisma.CrewMemberCreateNestedManyWithoutUserInput
+  posts?: Prisma.PostCreateNestedManyWithoutAuthorInput
+  splitExpenses?: Prisma.SplitExpenseCreateNestedManyWithoutSpenderInput
+  payHistories?: Prisma.ExpensePayHistoryCreateNestedManyWithoutUserInput
+  expenseRequests?: Prisma.ExpenseRequestCreateNestedManyWithoutUserInput
+}
+
+export type UserUncheckedCreateWithoutSplitMembersInput = {
+  id?: number
+  tg_id: string
+  tg_sub: string
+  username?: string | null
+  username_lower?: string | null
+  name: string
+  avatar?: string | null
+  createdAt?: Date | string
+  sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
+  crewMembers?: Prisma.CrewMemberUncheckedCreateNestedManyWithoutUserInput
+  posts?: Prisma.PostUncheckedCreateNestedManyWithoutAuthorInput
+  splitExpenses?: Prisma.SplitExpenseUncheckedCreateNestedManyWithoutSpenderInput
+  payHistories?: Prisma.ExpensePayHistoryUncheckedCreateNestedManyWithoutUserInput
+  expenseRequests?: Prisma.ExpenseRequestUncheckedCreateNestedManyWithoutUserInput
+}
+
+export type UserCreateOrConnectWithoutSplitMembersInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutSplitMembersInput, Prisma.UserUncheckedCreateWithoutSplitMembersInput>
+}
+
+export type UserUpsertWithoutSplitMembersInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutSplitMembersInput, Prisma.UserUncheckedUpdateWithoutSplitMembersInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutSplitMembersInput, Prisma.UserUncheckedCreateWithoutSplitMembersInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutSplitMembersInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutSplitMembersInput, Prisma.UserUncheckedUpdateWithoutSplitMembersInput>
+}
+
+export type UserUpdateWithoutSplitMembersInput = {
+  tg_id?: Prisma.StringFieldUpdateOperationsInput | string
+  tg_sub?: Prisma.StringFieldUpdateOperationsInput | string
+  username?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  username_lower?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  avatar?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
+  crewMembers?: Prisma.CrewMemberUpdateManyWithoutUserNestedInput
+  posts?: Prisma.PostUpdateManyWithoutAuthorNestedInput
+  splitExpenses?: Prisma.SplitExpenseUpdateManyWithoutSpenderNestedInput
+  payHistories?: Prisma.ExpensePayHistoryUpdateManyWithoutUserNestedInput
+  expenseRequests?: Prisma.ExpenseRequestUpdateManyWithoutUserNestedInput
+}
+
+export type UserUncheckedUpdateWithoutSplitMembersInput = {
+  id?: Prisma.IntFieldUpdateOperationsInput | number
+  tg_id?: Prisma.StringFieldUpdateOperationsInput | string
+  tg_sub?: Prisma.StringFieldUpdateOperationsInput | string
+  username?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  username_lower?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  avatar?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
+  crewMembers?: Prisma.CrewMemberUncheckedUpdateManyWithoutUserNestedInput
+  posts?: Prisma.PostUncheckedUpdateManyWithoutAuthorNestedInput
+  splitExpenses?: Prisma.SplitExpenseUncheckedUpdateManyWithoutSpenderNestedInput
+  payHistories?: Prisma.ExpensePayHistoryUncheckedUpdateManyWithoutUserNestedInput
+  expenseRequests?: Prisma.ExpenseRequestUncheckedUpdateManyWithoutUserNestedInput
+}
+
+export type UserCreateWithoutPayHistoriesInput = {
+  tg_id: string
+  tg_sub: string
+  username?: string | null
+  username_lower?: string | null
+  name: string
+  avatar?: string | null
+  createdAt?: Date | string
+  sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
+  crewMembers?: Prisma.CrewMemberCreateNestedManyWithoutUserInput
+  posts?: Prisma.PostCreateNestedManyWithoutAuthorInput
+  splitExpenses?: Prisma.SplitExpenseCreateNestedManyWithoutSpenderInput
+  splitMembers?: Prisma.SplitMemberCreateNestedManyWithoutUserInput
+  expenseRequests?: Prisma.ExpenseRequestCreateNestedManyWithoutUserInput
+}
+
+export type UserUncheckedCreateWithoutPayHistoriesInput = {
+  id?: number
+  tg_id: string
+  tg_sub: string
+  username?: string | null
+  username_lower?: string | null
+  name: string
+  avatar?: string | null
+  createdAt?: Date | string
+  sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
+  crewMembers?: Prisma.CrewMemberUncheckedCreateNestedManyWithoutUserInput
+  posts?: Prisma.PostUncheckedCreateNestedManyWithoutAuthorInput
+  splitExpenses?: Prisma.SplitExpenseUncheckedCreateNestedManyWithoutSpenderInput
+  splitMembers?: Prisma.SplitMemberUncheckedCreateNestedManyWithoutUserInput
+  expenseRequests?: Prisma.ExpenseRequestUncheckedCreateNestedManyWithoutUserInput
+}
+
+export type UserCreateOrConnectWithoutPayHistoriesInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutPayHistoriesInput, Prisma.UserUncheckedCreateWithoutPayHistoriesInput>
+}
+
+export type UserUpsertWithoutPayHistoriesInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutPayHistoriesInput, Prisma.UserUncheckedUpdateWithoutPayHistoriesInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutPayHistoriesInput, Prisma.UserUncheckedCreateWithoutPayHistoriesInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutPayHistoriesInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutPayHistoriesInput, Prisma.UserUncheckedUpdateWithoutPayHistoriesInput>
+}
+
+export type UserUpdateWithoutPayHistoriesInput = {
+  tg_id?: Prisma.StringFieldUpdateOperationsInput | string
+  tg_sub?: Prisma.StringFieldUpdateOperationsInput | string
+  username?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  username_lower?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  avatar?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
+  crewMembers?: Prisma.CrewMemberUpdateManyWithoutUserNestedInput
+  posts?: Prisma.PostUpdateManyWithoutAuthorNestedInput
+  splitExpenses?: Prisma.SplitExpenseUpdateManyWithoutSpenderNestedInput
+  splitMembers?: Prisma.SplitMemberUpdateManyWithoutUserNestedInput
+  expenseRequests?: Prisma.ExpenseRequestUpdateManyWithoutUserNestedInput
+}
+
+export type UserUncheckedUpdateWithoutPayHistoriesInput = {
+  id?: Prisma.IntFieldUpdateOperationsInput | number
+  tg_id?: Prisma.StringFieldUpdateOperationsInput | string
+  tg_sub?: Prisma.StringFieldUpdateOperationsInput | string
+  username?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  username_lower?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  avatar?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
+  crewMembers?: Prisma.CrewMemberUncheckedUpdateManyWithoutUserNestedInput
+  posts?: Prisma.PostUncheckedUpdateManyWithoutAuthorNestedInput
+  splitExpenses?: Prisma.SplitExpenseUncheckedUpdateManyWithoutSpenderNestedInput
+  splitMembers?: Prisma.SplitMemberUncheckedUpdateManyWithoutUserNestedInput
+  expenseRequests?: Prisma.ExpenseRequestUncheckedUpdateManyWithoutUserNestedInput
+}
+
+export type UserCreateWithoutExpenseRequestsInput = {
+  tg_id: string
+  tg_sub: string
+  username?: string | null
+  username_lower?: string | null
+  name: string
+  avatar?: string | null
+  createdAt?: Date | string
+  sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
+  crewMembers?: Prisma.CrewMemberCreateNestedManyWithoutUserInput
+  posts?: Prisma.PostCreateNestedManyWithoutAuthorInput
+  splitExpenses?: Prisma.SplitExpenseCreateNestedManyWithoutSpenderInput
+  splitMembers?: Prisma.SplitMemberCreateNestedManyWithoutUserInput
+  payHistories?: Prisma.ExpensePayHistoryCreateNestedManyWithoutUserInput
+}
+
+export type UserUncheckedCreateWithoutExpenseRequestsInput = {
+  id?: number
+  tg_id: string
+  tg_sub: string
+  username?: string | null
+  username_lower?: string | null
+  name: string
+  avatar?: string | null
+  createdAt?: Date | string
+  sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
+  crewMembers?: Prisma.CrewMemberUncheckedCreateNestedManyWithoutUserInput
+  posts?: Prisma.PostUncheckedCreateNestedManyWithoutAuthorInput
+  splitExpenses?: Prisma.SplitExpenseUncheckedCreateNestedManyWithoutSpenderInput
+  splitMembers?: Prisma.SplitMemberUncheckedCreateNestedManyWithoutUserInput
+  payHistories?: Prisma.ExpensePayHistoryUncheckedCreateNestedManyWithoutUserInput
+}
+
+export type UserCreateOrConnectWithoutExpenseRequestsInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutExpenseRequestsInput, Prisma.UserUncheckedCreateWithoutExpenseRequestsInput>
+}
+
+export type UserUpsertWithoutExpenseRequestsInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutExpenseRequestsInput, Prisma.UserUncheckedUpdateWithoutExpenseRequestsInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutExpenseRequestsInput, Prisma.UserUncheckedCreateWithoutExpenseRequestsInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutExpenseRequestsInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutExpenseRequestsInput, Prisma.UserUncheckedUpdateWithoutExpenseRequestsInput>
+}
+
+export type UserUpdateWithoutExpenseRequestsInput = {
+  tg_id?: Prisma.StringFieldUpdateOperationsInput | string
+  tg_sub?: Prisma.StringFieldUpdateOperationsInput | string
+  username?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  username_lower?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  avatar?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
+  crewMembers?: Prisma.CrewMemberUpdateManyWithoutUserNestedInput
+  posts?: Prisma.PostUpdateManyWithoutAuthorNestedInput
+  splitExpenses?: Prisma.SplitExpenseUpdateManyWithoutSpenderNestedInput
+  splitMembers?: Prisma.SplitMemberUpdateManyWithoutUserNestedInput
+  payHistories?: Prisma.ExpensePayHistoryUpdateManyWithoutUserNestedInput
+}
+
+export type UserUncheckedUpdateWithoutExpenseRequestsInput = {
+  id?: Prisma.IntFieldUpdateOperationsInput | number
+  tg_id?: Prisma.StringFieldUpdateOperationsInput | string
+  tg_sub?: Prisma.StringFieldUpdateOperationsInput | string
+  username?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  username_lower?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  avatar?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
+  crewMembers?: Prisma.CrewMemberUncheckedUpdateManyWithoutUserNestedInput
+  posts?: Prisma.PostUncheckedUpdateManyWithoutAuthorNestedInput
+  splitExpenses?: Prisma.SplitExpenseUncheckedUpdateManyWithoutSpenderNestedInput
+  splitMembers?: Prisma.SplitMemberUncheckedUpdateManyWithoutUserNestedInput
+  payHistories?: Prisma.ExpensePayHistoryUncheckedUpdateManyWithoutUserNestedInput
+}
+
+
+/**
+ * Count Type UserCountOutputType
+ */
+
+export type UserCountOutputType = {
+  sessions: number
+  crewMembers: number
+  posts: number
+  splitExpenses: number
+  splitMembers: number
+  payHistories: number
+  expenseRequests: number
+}
+
+export type UserCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  sessions?: boolean | UserCountOutputTypeCountSessionsArgs
+  crewMembers?: boolean | UserCountOutputTypeCountCrewMembersArgs
+  posts?: boolean | UserCountOutputTypeCountPostsArgs
+  splitExpenses?: boolean | UserCountOutputTypeCountSplitExpensesArgs
+  splitMembers?: boolean | UserCountOutputTypeCountSplitMembersArgs
+  payHistories?: boolean | UserCountOutputTypeCountPayHistoriesArgs
+  expenseRequests?: boolean | UserCountOutputTypeCountExpenseRequestsArgs
+}
+
+/**
+ * UserCountOutputType without action
+ */
+export type UserCountOutputTypeDefaultArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the UserCountOutputType
+   */
+  select?: Prisma.UserCountOutputTypeSelect<ExtArgs> | null
+}
+
+/**
+ * UserCountOutputType without action
+ */
+export type UserCountOutputTypeCountSessionsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.SessionWhereInput
+}
+
+/**
+ * UserCountOutputType without action
+ */
+export type UserCountOutputTypeCountCrewMembersArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.CrewMemberWhereInput
+}
+
+/**
+ * UserCountOutputType without action
+ */
+export type UserCountOutputTypeCountPostsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.PostWhereInput
+}
+
+/**
+ * UserCountOutputType without action
+ */
+export type UserCountOutputTypeCountSplitExpensesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.SplitExpenseWhereInput
+}
+
+/**
+ * UserCountOutputType without action
+ */
+export type UserCountOutputTypeCountSplitMembersArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.SplitMemberWhereInput
+}
+
+/**
+ * UserCountOutputType without action
+ */
+export type UserCountOutputTypeCountPayHistoriesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.ExpensePayHistoryWhereInput
+}
+
+/**
+ * UserCountOutputType without action
+ */
+export type UserCountOutputTypeCountExpenseRequestsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.ExpenseRequestWhereInput
+}
 
 
 export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   tg_id?: boolean
+  tg_sub?: boolean
   username?: boolean
+  username_lower?: boolean
   name?: boolean
   avatar?: boolean
   createdAt?: boolean
+  sessions?: boolean | Prisma.User$sessionsArgs<ExtArgs>
+  crewMembers?: boolean | Prisma.User$crewMembersArgs<ExtArgs>
+  posts?: boolean | Prisma.User$postsArgs<ExtArgs>
+  splitExpenses?: boolean | Prisma.User$splitExpensesArgs<ExtArgs>
+  splitMembers?: boolean | Prisma.User$splitMembersArgs<ExtArgs>
+  payHistories?: boolean | Prisma.User$payHistoriesArgs<ExtArgs>
+  expenseRequests?: boolean | Prisma.User$expenseRequestsArgs<ExtArgs>
+  _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["user"]>
 
 export type UserSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   tg_id?: boolean
+  tg_sub?: boolean
   username?: boolean
+  username_lower?: boolean
   name?: boolean
   avatar?: boolean
   createdAt?: boolean
@@ -417,7 +1276,9 @@ export type UserSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensio
 export type UserSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   tg_id?: boolean
+  tg_sub?: boolean
   username?: boolean
+  username_lower?: boolean
   name?: boolean
   avatar?: boolean
   createdAt?: boolean
@@ -426,21 +1287,45 @@ export type UserSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensio
 export type UserSelectScalar = {
   id?: boolean
   tg_id?: boolean
+  tg_sub?: boolean
   username?: boolean
+  username_lower?: boolean
   name?: boolean
   avatar?: boolean
   createdAt?: boolean
 }
 
-export type UserOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "tg_id" | "username" | "name" | "avatar" | "createdAt", ExtArgs["result"]["user"]>
+export type UserOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "tg_id" | "tg_sub" | "username" | "username_lower" | "name" | "avatar" | "createdAt", ExtArgs["result"]["user"]>
+export type UserInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  sessions?: boolean | Prisma.User$sessionsArgs<ExtArgs>
+  crewMembers?: boolean | Prisma.User$crewMembersArgs<ExtArgs>
+  posts?: boolean | Prisma.User$postsArgs<ExtArgs>
+  splitExpenses?: boolean | Prisma.User$splitExpensesArgs<ExtArgs>
+  splitMembers?: boolean | Prisma.User$splitMembersArgs<ExtArgs>
+  payHistories?: boolean | Prisma.User$payHistoriesArgs<ExtArgs>
+  expenseRequests?: boolean | Prisma.User$expenseRequestsArgs<ExtArgs>
+  _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
+}
+export type UserIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
+export type UserIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
 
 export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "User"
-  objects: {}
+  objects: {
+    sessions: Prisma.$SessionPayload<ExtArgs>[]
+    crewMembers: Prisma.$CrewMemberPayload<ExtArgs>[]
+    posts: Prisma.$PostPayload<ExtArgs>[]
+    splitExpenses: Prisma.$SplitExpensePayload<ExtArgs>[]
+    splitMembers: Prisma.$SplitMemberPayload<ExtArgs>[]
+    payHistories: Prisma.$ExpensePayHistoryPayload<ExtArgs>[]
+    expenseRequests: Prisma.$ExpenseRequestPayload<ExtArgs>[]
+  }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: number
-    tg_id: number
-    username: string
+    tg_id: string
+    tg_sub: string
+    username: string | null
+    username_lower: string | null
     name: string
     avatar: string | null
     createdAt: Date
@@ -838,6 +1723,13 @@ readonly fields: UserFieldRefs;
  */
 export interface Prisma__UserClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
+  sessions<T extends Prisma.User$sessionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$sessionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$SessionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  crewMembers<T extends Prisma.User$crewMembersArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$crewMembersArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$CrewMemberPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  posts<T extends Prisma.User$postsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$postsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$PostPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  splitExpenses<T extends Prisma.User$splitExpensesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$splitExpensesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$SplitExpensePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  splitMembers<T extends Prisma.User$splitMembersArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$splitMembersArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$SplitMemberPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  payHistories<T extends Prisma.User$payHistoriesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$payHistoriesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ExpensePayHistoryPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  expenseRequests<T extends Prisma.User$expenseRequestsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$expenseRequestsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ExpenseRequestPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -868,8 +1760,10 @@ export interface Prisma__UserClient<T, Null = never, ExtArgs extends runtime.Typ
  */
 export interface UserFieldRefs {
   readonly id: Prisma.FieldRef<"User", 'Int'>
-  readonly tg_id: Prisma.FieldRef<"User", 'Int'>
+  readonly tg_id: Prisma.FieldRef<"User", 'String'>
+  readonly tg_sub: Prisma.FieldRef<"User", 'String'>
   readonly username: Prisma.FieldRef<"User", 'String'>
+  readonly username_lower: Prisma.FieldRef<"User", 'String'>
   readonly name: Prisma.FieldRef<"User", 'String'>
   readonly avatar: Prisma.FieldRef<"User", 'String'>
   readonly createdAt: Prisma.FieldRef<"User", 'DateTime'>
@@ -890,6 +1784,10 @@ export type UserFindUniqueArgs<ExtArgs extends runtime.Types.Extensions.Internal
    */
   omit?: Prisma.UserOmit<ExtArgs> | null
   /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.UserInclude<ExtArgs> | null
+  /**
    * Filter, which User to fetch.
    */
   where: Prisma.UserWhereUniqueInput
@@ -908,6 +1806,10 @@ export type UserFindUniqueOrThrowArgs<ExtArgs extends runtime.Types.Extensions.I
    */
   omit?: Prisma.UserOmit<ExtArgs> | null
   /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.UserInclude<ExtArgs> | null
+  /**
    * Filter, which User to fetch.
    */
   where: Prisma.UserWhereUniqueInput
@@ -925,6 +1827,10 @@ export type UserFindFirstArgs<ExtArgs extends runtime.Types.Extensions.InternalA
    * Omit specific fields from the User
    */
   omit?: Prisma.UserOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.UserInclude<ExtArgs> | null
   /**
    * Filter, which User to fetch.
    */
@@ -974,6 +1880,10 @@ export type UserFindFirstOrThrowArgs<ExtArgs extends runtime.Types.Extensions.In
    */
   omit?: Prisma.UserOmit<ExtArgs> | null
   /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.UserInclude<ExtArgs> | null
+  /**
    * Filter, which User to fetch.
    */
   where?: Prisma.UserWhereInput
@@ -1021,6 +1931,10 @@ export type UserFindManyArgs<ExtArgs extends runtime.Types.Extensions.InternalAr
    * Omit specific fields from the User
    */
   omit?: Prisma.UserOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.UserInclude<ExtArgs> | null
   /**
    * Filter, which Users to fetch.
    */
@@ -1070,6 +1984,10 @@ export type UserCreateArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs
    */
   omit?: Prisma.UserOmit<ExtArgs> | null
   /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.UserInclude<ExtArgs> | null
+  /**
    * The data needed to create a User.
    */
   data: Prisma.XOR<Prisma.UserCreateInput, Prisma.UserUncheckedCreateInput>
@@ -1117,6 +2035,10 @@ export type UserUpdateArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs
    * Omit specific fields from the User
    */
   omit?: Prisma.UserOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.UserInclude<ExtArgs> | null
   /**
    * The data needed to update a User.
    */
@@ -1184,6 +2106,10 @@ export type UserUpsertArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs
    */
   omit?: Prisma.UserOmit<ExtArgs> | null
   /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.UserInclude<ExtArgs> | null
+  /**
    * The filter to search for the User to update in case it exists.
    */
   where: Prisma.UserWhereUniqueInput
@@ -1210,6 +2136,10 @@ export type UserDeleteArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs
    */
   omit?: Prisma.UserOmit<ExtArgs> | null
   /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.UserInclude<ExtArgs> | null
+  /**
    * Filter which User to delete.
    */
   where: Prisma.UserWhereUniqueInput
@@ -1230,6 +2160,174 @@ export type UserDeleteManyArgs<ExtArgs extends runtime.Types.Extensions.Internal
 }
 
 /**
+ * User.sessions
+ */
+export type User$sessionsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Session
+   */
+  select?: Prisma.SessionSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Session
+   */
+  omit?: Prisma.SessionOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.SessionInclude<ExtArgs> | null
+  where?: Prisma.SessionWhereInput
+  orderBy?: Prisma.SessionOrderByWithRelationInput | Prisma.SessionOrderByWithRelationInput[]
+  cursor?: Prisma.SessionWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.SessionScalarFieldEnum | Prisma.SessionScalarFieldEnum[]
+}
+
+/**
+ * User.crewMembers
+ */
+export type User$crewMembersArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the CrewMember
+   */
+  select?: Prisma.CrewMemberSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the CrewMember
+   */
+  omit?: Prisma.CrewMemberOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.CrewMemberInclude<ExtArgs> | null
+  where?: Prisma.CrewMemberWhereInput
+  orderBy?: Prisma.CrewMemberOrderByWithRelationInput | Prisma.CrewMemberOrderByWithRelationInput[]
+  cursor?: Prisma.CrewMemberWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.CrewMemberScalarFieldEnum | Prisma.CrewMemberScalarFieldEnum[]
+}
+
+/**
+ * User.posts
+ */
+export type User$postsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Post
+   */
+  select?: Prisma.PostSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Post
+   */
+  omit?: Prisma.PostOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.PostInclude<ExtArgs> | null
+  where?: Prisma.PostWhereInput
+  orderBy?: Prisma.PostOrderByWithRelationInput | Prisma.PostOrderByWithRelationInput[]
+  cursor?: Prisma.PostWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.PostScalarFieldEnum | Prisma.PostScalarFieldEnum[]
+}
+
+/**
+ * User.splitExpenses
+ */
+export type User$splitExpensesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the SplitExpense
+   */
+  select?: Prisma.SplitExpenseSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the SplitExpense
+   */
+  omit?: Prisma.SplitExpenseOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.SplitExpenseInclude<ExtArgs> | null
+  where?: Prisma.SplitExpenseWhereInput
+  orderBy?: Prisma.SplitExpenseOrderByWithRelationInput | Prisma.SplitExpenseOrderByWithRelationInput[]
+  cursor?: Prisma.SplitExpenseWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.SplitExpenseScalarFieldEnum | Prisma.SplitExpenseScalarFieldEnum[]
+}
+
+/**
+ * User.splitMembers
+ */
+export type User$splitMembersArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the SplitMember
+   */
+  select?: Prisma.SplitMemberSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the SplitMember
+   */
+  omit?: Prisma.SplitMemberOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.SplitMemberInclude<ExtArgs> | null
+  where?: Prisma.SplitMemberWhereInput
+  orderBy?: Prisma.SplitMemberOrderByWithRelationInput | Prisma.SplitMemberOrderByWithRelationInput[]
+  cursor?: Prisma.SplitMemberWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.SplitMemberScalarFieldEnum | Prisma.SplitMemberScalarFieldEnum[]
+}
+
+/**
+ * User.payHistories
+ */
+export type User$payHistoriesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the ExpensePayHistory
+   */
+  select?: Prisma.ExpensePayHistorySelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the ExpensePayHistory
+   */
+  omit?: Prisma.ExpensePayHistoryOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ExpensePayHistoryInclude<ExtArgs> | null
+  where?: Prisma.ExpensePayHistoryWhereInput
+  orderBy?: Prisma.ExpensePayHistoryOrderByWithRelationInput | Prisma.ExpensePayHistoryOrderByWithRelationInput[]
+  cursor?: Prisma.ExpensePayHistoryWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.ExpensePayHistoryScalarFieldEnum | Prisma.ExpensePayHistoryScalarFieldEnum[]
+}
+
+/**
+ * User.expenseRequests
+ */
+export type User$expenseRequestsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the ExpenseRequest
+   */
+  select?: Prisma.ExpenseRequestSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the ExpenseRequest
+   */
+  omit?: Prisma.ExpenseRequestOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ExpenseRequestInclude<ExtArgs> | null
+  where?: Prisma.ExpenseRequestWhereInput
+  orderBy?: Prisma.ExpenseRequestOrderByWithRelationInput | Prisma.ExpenseRequestOrderByWithRelationInput[]
+  cursor?: Prisma.ExpenseRequestWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.ExpenseRequestScalarFieldEnum | Prisma.ExpenseRequestScalarFieldEnum[]
+}
+
+/**
  * User without action
  */
 export type UserDefaultArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1241,4 +2339,8 @@ export type UserDefaultArgs<ExtArgs extends runtime.Types.Extensions.InternalArg
    * Omit specific fields from the User
    */
   omit?: Prisma.UserOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.UserInclude<ExtArgs> | null
 }

@@ -51,7 +51,18 @@ export const AnyNull = runtime.AnyNull
 
 
 export const ModelName = {
-  User: 'User'
+  User: 'User',
+  Session: 'Session',
+  Crew: 'Crew',
+  CrewMember: 'CrewMember',
+  CrewInvitationLink: 'CrewInvitationLink',
+  Post: 'Post',
+  PostAttachment: 'PostAttachment',
+  Split: 'Split',
+  SplitExpense: 'SplitExpense',
+  SplitMember: 'SplitMember',
+  ExpensePayHistory: 'ExpensePayHistory',
+  ExpenseRequest: 'ExpenseRequest'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -73,13 +84,152 @@ export type TransactionIsolationLevel = (typeof TransactionIsolationLevel)[keyof
 export const UserScalarFieldEnum = {
   id: 'id',
   tg_id: 'tg_id',
+  tg_sub: 'tg_sub',
   username: 'username',
+  username_lower: 'username_lower',
   name: 'name',
   avatar: 'avatar',
   createdAt: 'createdAt'
 } as const
 
 export type UserScalarFieldEnum = (typeof UserScalarFieldEnum)[keyof typeof UserScalarFieldEnum]
+
+
+export const SessionScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  ip: 'ip',
+  agent: 'agent',
+  location: 'location',
+  createdAt: 'createdAt',
+  lastUsedAt: 'lastUsedAt',
+  expiresAt: 'expiresAt'
+} as const
+
+export type SessionScalarFieldEnum = (typeof SessionScalarFieldEnum)[keyof typeof SessionScalarFieldEnum]
+
+
+export const CrewScalarFieldEnum = {
+  id: 'id',
+  title: 'title',
+  avatar: 'avatar',
+  cover: 'cover',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type CrewScalarFieldEnum = (typeof CrewScalarFieldEnum)[keyof typeof CrewScalarFieldEnum]
+
+
+export const CrewMemberScalarFieldEnum = {
+  id: 'id',
+  crewId: 'crewId',
+  userId: 'userId',
+  role: 'role',
+  alias: 'alias',
+  joinedAt: 'joinedAt'
+} as const
+
+export type CrewMemberScalarFieldEnum = (typeof CrewMemberScalarFieldEnum)[keyof typeof CrewMemberScalarFieldEnum]
+
+
+export const CrewInvitationLinkScalarFieldEnum = {
+  id: 'id',
+  crewId: 'crewId',
+  inviteCode: 'inviteCode',
+  createdAt: 'createdAt'
+} as const
+
+export type CrewInvitationLinkScalarFieldEnum = (typeof CrewInvitationLinkScalarFieldEnum)[keyof typeof CrewInvitationLinkScalarFieldEnum]
+
+
+export const PostScalarFieldEnum = {
+  id: 'id',
+  authorId: 'authorId',
+  crewId: 'crewId',
+  content: 'content',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type PostScalarFieldEnum = (typeof PostScalarFieldEnum)[keyof typeof PostScalarFieldEnum]
+
+
+export const PostAttachmentScalarFieldEnum = {
+  id: 'id',
+  postId: 'postId',
+  key: 'key',
+  name: 'name',
+  mimeType: 'mimeType',
+  size: 'size',
+  createdAt: 'createdAt'
+} as const
+
+export type PostAttachmentScalarFieldEnum = (typeof PostAttachmentScalarFieldEnum)[keyof typeof PostAttachmentScalarFieldEnum]
+
+
+export const SplitScalarFieldEnum = {
+  id: 'id',
+  title: 'title',
+  desc: 'desc',
+  crewId: 'crewId',
+  archived: 'archived',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type SplitScalarFieldEnum = (typeof SplitScalarFieldEnum)[keyof typeof SplitScalarFieldEnum]
+
+
+export const SplitExpenseScalarFieldEnum = {
+  id: 'id',
+  splitId: 'splitId',
+  title: 'title',
+  desc: 'desc',
+  spenderId: 'spenderId',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type SplitExpenseScalarFieldEnum = (typeof SplitExpenseScalarFieldEnum)[keyof typeof SplitExpenseScalarFieldEnum]
+
+
+export const SplitMemberScalarFieldEnum = {
+  id: 'id',
+  splitExpenseId: 'splitExpenseId',
+  userId: 'userId',
+  paid: 'paid',
+  mustPay: 'mustPay'
+} as const
+
+export type SplitMemberScalarFieldEnum = (typeof SplitMemberScalarFieldEnum)[keyof typeof SplitMemberScalarFieldEnum]
+
+
+export const ExpensePayHistoryScalarFieldEnum = {
+  id: 'id',
+  splitId: 'splitId',
+  splitExpenseId: 'splitExpenseId',
+  userId: 'userId',
+  amount: 'amount',
+  type: 'type',
+  msg: 'msg',
+  procByRequest: 'procByRequest',
+  createdAt: 'createdAt'
+} as const
+
+export type ExpensePayHistoryScalarFieldEnum = (typeof ExpensePayHistoryScalarFieldEnum)[keyof typeof ExpensePayHistoryScalarFieldEnum]
+
+
+export const ExpenseRequestScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  expenseId: 'expenseId',
+  amount: 'amount',
+  msg: 'msg',
+  createdAt: 'createdAt'
+} as const
+
+export type ExpenseRequestScalarFieldEnum = (typeof ExpenseRequestScalarFieldEnum)[keyof typeof ExpenseRequestScalarFieldEnum]
 
 
 export const SortOrder = {

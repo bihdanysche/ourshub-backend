@@ -9,7 +9,17 @@
 * 🟢 You can import this file directly.
 */
 
+export const CrewMemberRole = {
+  OWNER: 'OWNER',
+  MEMBER: 'MEMBER'
+} as const
+
+export type CrewMemberRole = (typeof CrewMemberRole)[keyof typeof CrewMemberRole]
 
 
-// This file is empty because there are no enums in the schema.
-export {}
+export const ExpensePayHistoryType = {
+  PAY: 'PAY',
+  INC: 'INC'
+} as const
+
+export type ExpensePayHistoryType = (typeof ExpensePayHistoryType)[keyof typeof ExpensePayHistoryType]

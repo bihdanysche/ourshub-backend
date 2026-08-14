@@ -44,3 +44,58 @@ export { Prisma }
  * 
  */
 export type User = Prisma.UserModel
+/**
+ * Model Session
+ * 
+ */
+export type Session = Prisma.SessionModel
+/**
+ * Model Crew
+ * 
+ */
+export type Crew = Prisma.CrewModel
+/**
+ * Model CrewMember
+ * 
+ */
+export type CrewMember = Prisma.CrewMemberModel
+/**
+ * Model CrewInvitationLink
+ * 
+ */
+export type CrewInvitationLink = Prisma.CrewInvitationLinkModel
+/**
+ * Model Post
+ * 
+ */
+export type Post = Prisma.PostModel
+/**
+ * Model PostAttachment
+ * 
+ */
+export type PostAttachment = Prisma.PostAttachmentModel
+/**
+ * Model Split
+ * 
+ */
+export type Split = Prisma.SplitModel
+/**
+ * Model SplitExpense
+ * 
+ */
+export type SplitExpense = Prisma.SplitExpenseModel
+/**
+ * Model SplitMember
+ * 
+ */
+export type SplitMember = Prisma.SplitMemberModel
+/**
+ * Model ExpensePayHistory
+ * 
+ */
+export type ExpensePayHistory = Prisma.ExpensePayHistoryModel
+/**
+ * Model ExpenseRequest
+ * 
+ */
+export type ExpenseRequest = Prisma.ExpenseRequestModel
