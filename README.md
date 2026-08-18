@@ -2,6 +2,8 @@
 
 OursHub is a backend service for a group expense sharing ("splits"), crew collaboration, posts, and media management platform. The application provides Telegram OIDC authentication, group expense tracking and settlement, post feed with media attachments, and object storage management via S3/MinIO.
 
+Frontend Repository: [OursHub Frontend](https://github.com/bihdanysche/ourshub-frontend)
+
 ---
 
 ## Technology Stack
