@@ -1,3 +1,4 @@
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Transform, TransformFnParams, Type } from 'class-transformer';
 import {
   ArrayMaxSize,
@@ -14,6 +15,7 @@ import { SPLIT_LIMITS } from '../constants/splits.constants';
 import { CreateSplitExpenseDto } from './create-split-expense.dto';
 
 export class CreateSplitDto {
+  @ApiProperty({ description: 'Split title', example: 'Dinner Expense' })
   @IsString()
   @Transform(({ value }: TransformFnParams): string =>
     typeof value === 'string' ? value.trim() : String(value ?? ''),
@@ -26,6 +28,7 @@ export class CreateSplitDto {
   })
   title: string;
 
+  @ApiPropertyOptional({ description: 'Split description', example: 'Pizza and drinks' })
   @IsOptional()
   @IsString()
   @Transform(({ value }: TransformFnParams): string | undefined =>
@@ -41,6 +44,7 @@ export class CreateSplitDto {
   })
   desc?: string;
 
+  @ApiProperty({ type: [CreateSplitExpenseDto], description: 'Expenses list' })
   @IsArray()
   @ArrayMinSize(SPLIT_LIMITS.MIN_EXPENSES)
   @ArrayMaxSize(SPLIT_LIMITS.MAX_EXPENSES)

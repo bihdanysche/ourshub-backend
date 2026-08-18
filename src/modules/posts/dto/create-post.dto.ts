@@ -1,8 +1,10 @@
+import { ApiProperty } from '@nestjs/swagger';
 import { Transform, TransformFnParams } from 'class-transformer';
 import { IsString, Matches, MaxLength, MinLength } from 'class-validator';
 import { POST_LIMITS } from '../constants/posts.constants';
 
 export class CreatePostDto {
+  @ApiProperty({ description: 'Post text content', example: 'Hello crew!' })
   @IsString()
   @Transform(({ value }: TransformFnParams): string =>
     typeof value === 'string' ? value.trim() : String(value ?? ''),

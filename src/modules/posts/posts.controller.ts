@@ -12,6 +12,14 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { AnyFilesInterceptor } from '@nestjs/platform-express';
+import {
+  ApiBody,
+  ApiConsumes,
+  ApiCookieAuth,
+  ApiOperation,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 import { PaginatedResponseDto } from 'src/common/dto/pagination/paginated-response.dto';
 import { AuthRequired } from 'src/modules/auth/decorators/auth-required.decorator';
 import { CurrentUser } from 'src/modules/auth/decorators/current-user.decorator';
@@ -21,12 +29,16 @@ import { PostItemResponseDto } from './dto/post-item-response.dto';
 import { UpdatePostDto } from './dto/update-post.dto';
 import { PostsService } from './posts.service';
 
+@ApiTags('posts')
+@ApiCookieAuth('access_token')
 @Controller('posts')
 @AuthRequired()
 export class PostsController {
   constructor(private readonly postsService: PostsService) {}
 
   @Get(':crewId')
+  @ApiOperation({ summary: 'Get paginated posts for a crew' })
+  @ApiResponse({ status: 200, description: 'Paginated posts' })
   async getPosts(
     @CurrentUser('id') userId: number,
     @Param('crewId', ParseIntPipe) crewId: number,
@@ -36,6 +48,9 @@ export class PostsController {
   }
 
   @Post(':crewId')
+  @ApiOperation({ summary: 'Create a post in crew with optional attachments' })
+  @ApiConsumes('multipart/form-data')
+  @ApiResponse({ status: 201, description: 'Post created' })
   @UseInterceptors(AnyFilesInterceptor())
   async createPost(
     @CurrentUser('id') userId: number,
@@ -47,6 +62,9 @@ export class PostsController {
   }
 
   @Patch(':crewId/:postId')
+  @ApiOperation({ summary: 'Update post content and manage attachments' })
+  @ApiConsumes('multipart/form-data')
+  @ApiResponse({ status: 200, description: 'Post updated' })
   @UseInterceptors(AnyFilesInterceptor())
   async updatePost(
     @CurrentUser('id') userId: number,
@@ -84,6 +102,9 @@ export class PostsController {
   }
 
   @Post(':crewId/:postId/attachments')
+  @ApiOperation({ summary: 'Upload attachments to an existing post' })
+  @ApiConsumes('multipart/form-data')
+  @ApiResponse({ status: 201, description: 'Attachments uploaded' })
   @UseInterceptors(AnyFilesInterceptor())
   async uploadPostAttachments(
     @CurrentUser('id') userId: number,
@@ -100,6 +121,8 @@ export class PostsController {
   }
 
   @Delete(':crewId/:postId/attachments/:attachmentId')
+  @ApiOperation({ summary: 'Delete a single post attachment' })
+  @ApiResponse({ status: 200, description: 'Attachment deleted' })
   async deletePostAttachment(
     @CurrentUser('id') userId: number,
     @Param('crewId', ParseIntPipe) crewId: number,
@@ -115,6 +138,8 @@ export class PostsController {
   }
 
   @Delete(':crewId/:postId')
+  @ApiOperation({ summary: 'Delete a post and its attachments' })
+  @ApiResponse({ status: 200, description: 'Post deleted' })
   async deletePost(
     @CurrentUser('id') userId: number,
     @Param('crewId', ParseIntPipe) crewId: number,

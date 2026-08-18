@@ -1,12 +1,19 @@
 import { Controller, Get, Query, Req, Res } from '@nestjs/common';
+import { ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
 import type { Request, Response } from 'express';
 import { StorageService } from './storage.service';
 
+@ApiTags('storage')
 @Controller('storage')
 export class StorageController {
   constructor(private readonly storageService: StorageService) {}
 
   @Get()
+  @ApiOperation({ summary: 'Retrieve binary file/media by key' })
+  @ApiQuery({ name: 'k', required: true, description: 'Storage object key' })
+  @ApiResponse({ status: 200, description: 'File content stream' })
+  @ApiResponse({ status: 206, description: 'Partial content stream (Range)' })
+  @ApiResponse({ status: 404, description: 'File not found' })
   async get(
     @Query('k') key: string,
     @Req() req: Request,

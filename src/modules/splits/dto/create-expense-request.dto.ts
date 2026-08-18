@@ -1,3 +1,4 @@
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Transform } from 'class-transformer';
 import {
   IsNumber,
@@ -8,10 +9,12 @@ import {
 } from 'class-validator';
 
 export class CreateExpenseRequestDto {
+  @ApiProperty({ description: 'Payment amount requested', example: 15.5 })
   @IsNumber()
   @Min(0.01)
   amount: number;
 
+  @ApiPropertyOptional({ description: 'Optional payment note/message', example: 'Sent via Monobank' })
   @IsOptional()
   @IsString()
   @Transform(({ value }: { value: unknown }) =>

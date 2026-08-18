@@ -4,11 +4,12 @@ import {
   PutObjectCommand,
   S3Client,
 } from '@aws-sdk/client-s3';
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class StorageService {
+  private readonly logger = new Logger(StorageService.name);
   private readonly client: S3Client;
   private readonly bucket: string;
 
@@ -80,8 +81,8 @@ export class StorageService {
           Key: key,
         }),
       );
-    } catch {
-      /* empty */
+    } catch (err) {
+      this.logger.warn(`Failed to delete storage key ${key}: ${err}`);
     }
   }
 }

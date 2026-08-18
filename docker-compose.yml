@@ -27,7 +27,7 @@ services:
       - minio_data:/data
 
   backend:
-    image: ourshub-backend
+    image: ghcr.io/bihdanysche/ourshub-backend:main
     container_name: ourshub-backend
     restart: unless-stopped
     env_file:

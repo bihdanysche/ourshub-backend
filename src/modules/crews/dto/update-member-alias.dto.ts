@@ -1,8 +1,10 @@
+import { ApiPropertyOptional } from '@nestjs/swagger';
 import { Transform, TransformFnParams } from 'class-transformer';
 import { IsOptional, IsString, MaxLength } from 'class-validator';
 import { CREW_LIMITS } from '../constants/crews.constants';
 
 export class UpdateMemberAliasDto {
+  @ApiPropertyOptional({ description: 'Member alias inside crew', example: 'Chief' })
   @IsOptional()
   @Transform(({ value }: TransformFnParams): string | null => {
     if (typeof value === 'string') {

@@ -155,24 +155,7 @@ export class PostsService {
     });
 
     if (files && files.length > 0) {
-      for (const file of files) {
-        const key = `posts/attachments/${post.id}_${randomUUID()}_${file.originalname}`;
-        await this.storageService.uploadBuffer(
-          file.buffer,
-          key,
-          file.mimetype,
-        );
-
-        await this.prisma.postAttachment.create({
-          data: {
-            postId: post.id,
-            key,
-            name: file.originalname,
-            mimeType: file.mimetype,
-            size: file.size,
-          },
-        });
-      }
+      await this.processAttachments(post.id, files);
     }
 
     return { ok: true };
@@ -270,24 +253,7 @@ export class PostsService {
     });
 
     if (files && files.length > 0) {
-      for (const file of files) {
-        const key = `posts/attachments/${post.id}_${randomUUID()}_${file.originalname}`;
-        await this.storageService.uploadBuffer(
-          file.buffer,
-          key,
-          file.mimetype,
-        );
-
-        await this.prisma.postAttachment.create({
-          data: {
-            postId: post.id,
-            key,
-            name: file.originalname,
-            mimeType: file.mimetype,
-            size: file.size,
-          },
-        });
-      }
+      await this.processAttachments(post.id, files);
     }
 
     return { ok: true };
@@ -403,23 +369,8 @@ export class PostsService {
       }
     }
 
-    for (const file of files) {
-      const key = `posts/attachments/${post.id}_${randomUUID()}_${file.originalname}`;
-      await this.storageService.uploadBuffer(
-        file.buffer,
-        key,
-        file.mimetype,
-      );
-
-      await this.prisma.postAttachment.create({
-        data: {
-          postId: post.id,
-          key,
-          name: file.originalname,
-          mimeType: file.mimetype,
-          size: file.size,
-        },
-      });
+    if (files && files.length > 0) {
+      await this.processAttachments(post.id, files);
     }
 
     return { ok: true };
@@ -485,5 +436,31 @@ export class PostsService {
     });
 
     return { ok: true };
+  }
+
+  private async processAttachments(
+    postId: number,
+    files: Express.Multer.File[],
+  ): Promise<void> {
+    await Promise.all(
+      files.map(async (file) => {
+        const key = `posts/attachments/${postId}_${randomUUID()}_${file.originalname}`;
+        await this.storageService.uploadBuffer(
+          file.buffer,
+          key,
+          file.mimetype,
+        );
+
+        await this.prisma.postAttachment.create({
+          data: {
+            postId,
+            key,
+            name: file.originalname,
+            mimeType: file.mimetype,
+            size: file.size,
+          },
+        });
+      }),
+    );
   }
 }
