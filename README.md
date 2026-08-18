@@ -1,98 +1,134 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+# OursHub Backend
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+OursHub is a backend service for a group expense sharing ("splits"), crew collaboration, posts, and media management platform. The application provides Telegram OIDC authentication, group expense tracking and settlement, post feed with media attachments, and object storage management via S3/MinIO.
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+---
 
-## Description
+## Technology Stack
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+- Framework: NestJS (TypeScript)
+- Runtime & Package Manager: Bun
+- Database & ORM: PostgreSQL + Prisma ORM (@prisma/adapter-pg)
+- Authentication: Telegram OIDC / OAuth2 + JWT (Access/Refresh in HTTP-Only cookies) + GeoIP
+- Object Storage: MinIO / AWS S3 (@aws-sdk/client-s3)
+- Image Processing: Sharp (aspect ratio validation, compression, HEIC/HEIF to PNG conversion)
+- API Documentation: OpenAPI (Swagger) + Scalar API Reference (@scalar/nestjs-api-reference)
 
-## Project setup
+---
 
-```bash
-$ bun install
+## Project Architecture
+
+The application follows a modular NestJS structure where business domains are isolated under `src/modules/`:
+
+```text
+src/
+├── app.module.ts                   # Root application module
+├── main.ts                         # Entrypoint, CORS, Helmet, OpenAPI Scalar /docs
+├── common/                         # Common utilities, filters, DTOs, and configuration
+│   ├── config/                     # Environment configuration and validation
+│   ├── dto/pagination/             # Unified pagination DTOs
+│   ├── errors/                     # Common error codes enum
+│   ├── filters/                    # Global HttpExceptionFilter for { error_code } responses
+│   └── utils/                      # Image processing and error parsing helpers
+├── prisma/                         # PrismaService with PostgreSQL adapter
+└── modules/
+    ├── auth/                       # Telegram OIDC auth, user sessions, tokens, user avatars
+    ├── crews/                      # Crew management (creation, invites, members, avatars/covers)
+    ├── health/                     # Service health check (/health)
+    ├── me/                         # Current user profile management
+    ├── posts/                      # Group posts with file attachments
+    ├── splits/                     # Expenses (splits), debt calculation, history, payment requests
+    └── storage/                    # S3 media file streaming with HTTP Range support
 ```
 
-## Compile and run the project
+### Key Architectural Concepts
+
+1. Unified Error Format: All exceptions are caught by `HttpExceptionFilter` and formatted consistently as `{ error_code: "..." }`.
+2. Input Validation: Input payloads are strictly validated using `class-validator` and `class-transformer`. Empty successful responses return `{ ok: true }`.
+3. Media Processing: Avatar and attachment images are validated and converted via `sharp` before being written to S3. Multi-file uploads execute concurrently via `Promise.all`.
+
+---
+
+## API Documentation (Scalar)
+
+Interactive OpenAPI documentation is hosted at:
+
+http://localhost:8080/docs
+
+The documentation is built using `@nestjs/swagger` and rendered via Scalar UI, detailing endpoints, DTO schemas, request/response models, and cookie authentication details.
+
+---
+
+## Getting Started
+
+### 1. Prerequisites
+
+- Bun (v1.0+)
+- Docker and Docker Compose (for local PostgreSQL and MinIO instances)
+
+### 2. Install Dependencies
 
 ```bash
-# development
-$ bun run start
-
-# watch mode
-$ bun run start:dev
-
-# production mode
-$ bun run start:prod
+bun install
 ```
 
-## Run tests
+### 3. Environment Variables (.env)
+
+Create a `.env` file in the root directory with the following configuration:
+
+```env
+NODE_ENV=development
+PORT=8080
+
+# Database
+DATABASE_URL=postgresql://postgres:postgres@localhost:5432/ourshub?schema=public
+
+# JWT Secret
+JWT_SECRET=super-secret-key-change-me
+
+# Telegram OAuth2 / OIDC
+TG_CLIENT_ID=your_telegram_client_id
+TG_CLIENT_SECRET=your_telegram_client_secret
+TG_REDIRECT_URI=http://localhost:8080/auth/telegram/callback
+
+# Frontend URI
+FRONTEND_URI=http://localhost:3000
+
+# MinIO S3 Settings
+MINIO_ENDPOINT=127.0.0.1
+MINIO_PORT=9000
+MINIO_ACCESS_KEY=minioadmin
+MINIO_SECRET_KEY=minioadmin
+MINIO_BUCKET=ourshub
+```
+
+### 4. Run Infrastructure (PostgreSQL & MinIO)
 
 ```bash
-# unit tests
-$ bun run test
-
-# e2e tests
-$ bun run test:e2e
-
-# test coverage
-$ bun run test:cov
+docker-compose up -d
 ```
 
-## Deployment
-
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
-
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
+### 5. Apply Database Schema
 
 ```bash
-$ bun install -g @nestjs/mau
-$ mau deploy
+npx prisma db push
 ```
 
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
+### 6. Start Server
 
-## Resources
+Development mode:
+```bash
+bun run start:dev
+```
 
-Check out a few resources that may come in handy when working with NestJS:
+Production mode:
+```bash
+bun run build
+bun run start:prod
+```
 
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
+### 7. Run Tests
 
-## Support
-
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
-
-## Stay in touch
-
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
-
-## License
-
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+```bash
+bun test
+```

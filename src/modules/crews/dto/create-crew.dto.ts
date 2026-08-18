@@ -1,8 +1,10 @@
+import { ApiProperty } from '@nestjs/swagger';
 import { Transform, TransformFnParams } from 'class-transformer';
 import { IsString, Matches, MaxLength, MinLength } from 'class-validator';
 import { CREW_LIMITS } from '../constants/crews.constants';
 
 export class CreateCrewDto {
+  @ApiProperty({ description: 'Crew title', example: 'Summer Trip' })
   @IsString()
   @Transform(({ value }: TransformFnParams): string =>
     typeof value === 'string' ? value.trim() : String(value ?? ''),

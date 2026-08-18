@@ -1,3 +1,4 @@
+import { ApiPropertyOptional } from '@nestjs/swagger';
 import { Transform, TransformFnParams, Type } from 'class-transformer';
 import {
   IsArray,
@@ -12,6 +13,7 @@ import { SPLIT_LIMITS } from '../constants/splits.constants';
 import { UpdateSplitExpenseDto } from './update-split-expense.dto';
 
 export class UpdateSplitDto {
+  @ApiPropertyOptional({ description: 'Updated title' })
   @IsOptional()
   @IsString()
   @Transform(({ value }: TransformFnParams): string | undefined =>
@@ -27,6 +29,7 @@ export class UpdateSplitDto {
   })
   title?: string;
 
+  @ApiPropertyOptional({ description: 'Updated description' })
   @IsOptional()
   @IsString()
   @Transform(({ value }: TransformFnParams): string | undefined =>
@@ -42,6 +45,7 @@ export class UpdateSplitDto {
   })
   desc?: string;
 
+  @ApiPropertyOptional({ type: [UpdateSplitExpenseDto], description: 'Updated expenses list' })
   @IsOptional()
   @IsArray()
   @ValidateNested({ each: true })

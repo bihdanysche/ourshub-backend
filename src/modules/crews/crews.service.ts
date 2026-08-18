@@ -643,6 +643,16 @@ export class CrewsService {
   ): Promise<{ ok: true }> {
     await this.ensureCrewOwner(userId, crewId);
 
+    const crew = await this.prisma.crew.findUnique({
+      where: { id: crewId },
+    });
+
+    if (!crew) {
+      throw new NotFoundException({
+        error_code: CrewErrorCode.CREW_NOT_FOUND,
+      });
+    }
+
     const processed = await processAndValidateImage(file, {
       maxSizeBytes: 20 * 1024 * 1024,
       targetAspectRatio: 1,
@@ -653,16 +663,6 @@ export class CrewsService {
         INVALID_IMAGE_ASPECT_RATIO: CrewErrorCode.INVALID_IMAGE_ASPECT_RATIO,
       },
     });
-
-    const crew = await this.prisma.crew.findUnique({
-      where: { id: crewId },
-    });
-
-    if (!crew) {
-      throw new NotFoundException({
-        error_code: CrewErrorCode.CREW_NOT_FOUND,
-      });
-    }
 
     if (crew.avatar) {
       await this.storageService.delete(crew.avatar);
@@ -690,6 +690,16 @@ export class CrewsService {
   ): Promise<{ ok: true }> {
     await this.ensureCrewOwner(userId, crewId);
 
+    const crew = await this.prisma.crew.findUnique({
+      where: { id: crewId },
+    });
+
+    if (!crew) {
+      throw new NotFoundException({
+        error_code: CrewErrorCode.CREW_NOT_FOUND,
+      });
+    }
+
     const processed = await processAndValidateImage(file, {
       maxSizeBytes: 20 * 1024 * 1024,
       targetAspectRatio: 3,
@@ -700,16 +710,6 @@ export class CrewsService {
         INVALID_IMAGE_ASPECT_RATIO: CrewErrorCode.INVALID_IMAGE_ASPECT_RATIO,
       },
     });
-
-    const crew = await this.prisma.crew.findUnique({
-      where: { id: crewId },
-    });
-
-    if (!crew) {
-      throw new NotFoundException({
-        error_code: CrewErrorCode.CREW_NOT_FOUND,
-      });
-    }
 
     if (crew.cover) {
       await this.storageService.delete(crew.cover);

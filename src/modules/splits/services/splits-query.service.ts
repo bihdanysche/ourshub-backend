@@ -330,7 +330,6 @@ export class SplitsQueryService {
     } else if (query.role === ExpenseRequestRoleFilter.AS_USER) {
       where.userId = userId;
     } else {
-      // ALL: where user is either the requesting debtor or the expense spender
       where.OR = [
         { userId },
         { expense: { splitId, spenderId: userId } },

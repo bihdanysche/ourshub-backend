@@ -1,6 +1,7 @@
 import {
   BadRequestException,
   Injectable,
+  Logger,
   NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
@@ -45,6 +46,8 @@ import {
 
 @Injectable()
 export class AuthService {
+  private readonly logger = new Logger(AuthService.name);
+
   constructor(
     private readonly prisma: PrismaService,
     private readonly telegram: TelegramOidcService,
@@ -111,7 +114,7 @@ export class AuthService {
       clearOidcCookies(res);
       return this.redirectToFrontend(res, { success: true, inv_code });
     } catch (err) {
-      console.log(err);
+      this.logger.error(err);
       clearOidcCookies(res);
       const errorCode = extractErrorCode(
         err,
@@ -420,6 +423,16 @@ export class AuthService {
     userId: number,
     file: Express.Multer.File,
   ): Promise<{ ok: true }> {
+    const user = await this.prisma.user.findUnique({
+      where: { id: userId },
+    });
+
+    if (!user) {
+      throw new NotFoundException({
+        error_code: CommonErrorCode.NOT_FOUND,
+      });
+    }
+
     const processed = await processAndValidateImage(file, {
       maxSizeBytes: 15 * 1024 * 1024,
       targetAspectRatio: 1,
@@ -430,16 +443,6 @@ export class AuthService {
         INVALID_IMAGE_ASPECT_RATIO: AuthErrorCode.INVALID_IMAGE_ASPECT_RATIO,
       },
     });
-
-    const user = await this.prisma.user.findUnique({
-      where: { id: userId },
-    });
-
-    if (!user) {
-      throw new NotFoundException({
-        error_code: CommonErrorCode.NOT_FOUND,
-      });
-    }
 
     if (user.avatar) {
       await this.storageService.delete(user.avatar);

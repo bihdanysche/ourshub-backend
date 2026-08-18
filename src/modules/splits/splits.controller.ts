@@ -11,6 +11,7 @@ import {
   Put,
   Query,
 } from '@nestjs/common';
+import { ApiCookieAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { PaginatedResponseDto } from 'src/common/dto/pagination/paginated-response.dto';
 import { AuthRequired } from 'src/modules/auth/decorators/auth-required.decorator';
 import { CurrentUser } from 'src/modules/auth/decorators/current-user.decorator';
@@ -33,12 +34,16 @@ import { SplitItemResponseDto } from './dto/split-item-response.dto';
 import { UpdateSplitDto } from './dto/update-split.dto';
 import { SplitsService } from './splits.service';
 
+@ApiTags('splits')
+@ApiCookieAuth('access_token')
 @Controller('splits')
 @AuthRequired()
 export class SplitsController {
   constructor(private readonly splitsService: SplitsService) {}
 
   @Get('all/:crewId')
+  @ApiOperation({ summary: 'Get paginated splits for crew' })
+  @ApiResponse({ status: 200, description: 'Paginated splits' })
   async getSplits(
     @CurrentUser('id') userId: number,
     @Param('crewId', ParseIntPipe) crewId: number,
@@ -48,6 +53,8 @@ export class SplitsController {
   }
 
   @Post('create/:crewId')
+  @ApiOperation({ summary: 'Create a new split in crew' })
+  @ApiResponse({ status: 201, description: 'Split created' })
   async createSplit(
     @CurrentUser('id') userId: number,
     @Param('crewId', ParseIntPipe) crewId: number,
@@ -57,6 +64,8 @@ export class SplitsController {
   }
 
   @Get(':splitId')
+  @ApiOperation({ summary: 'Get split details by ID' })
+  @ApiResponse({ status: 200, type: SplitDetailResponseDto })
   async getSplitById(
     @CurrentUser('id') userId: number,
     @Param('splitId', ParseIntPipe) splitId: number,
@@ -65,6 +74,8 @@ export class SplitsController {
   }
 
   @Patch(':splitId')
+  @ApiOperation({ summary: 'Update split details' })
+  @ApiResponse({ status: 200, description: 'Split updated' })
   async updateSplit(
     @CurrentUser('id') userId: number,
     @Param('splitId', ParseIntPipe) splitId: number,
@@ -74,6 +85,8 @@ export class SplitsController {
   }
 
   @Delete(':splitId/archive')
+  @ApiOperation({ summary: 'Archive split (when fully settled)' })
+  @ApiResponse({ status: 200, description: 'Split archived' })
   async archiveSplit(
     @CurrentUser('id') userId: number,
     @Param('splitId', ParseIntPipe) splitId: number,
@@ -82,6 +95,8 @@ export class SplitsController {
   }
 
   @Put(':splitId/:expenseId/pay-off')
+  @ApiOperation({ summary: 'Pay off debt for expense items (spender only)' })
+  @ApiResponse({ status: 200, description: 'Payments processed' })
   async payOff(
     @CurrentUser('id') userId: number,
     @Param('splitId', ParseIntPipe) splitId: number,
@@ -92,6 +107,8 @@ export class SplitsController {
   }
 
   @Put(':splitId/:expenseId/increase')
+  @ApiOperation({ summary: 'Increase member debt for expense (spender only)' })
+  @ApiResponse({ status: 200, description: 'Debts updated' })
   async increase(
     @CurrentUser('id') userId: number,
     @Param('splitId', ParseIntPipe) splitId: number,
@@ -103,6 +120,8 @@ export class SplitsController {
   }
 
   @Get(':splitId/history')
+  @ApiOperation({ summary: 'Get split payment/increase history audit log' })
+  @ApiResponse({ status: 200, description: 'Paginated split history' })
   async getHistory(
     @CurrentUser('id') userId: number,
     @Param('splitId', ParseIntPipe) splitId: number,
@@ -112,6 +131,8 @@ export class SplitsController {
   }
 
   @Post([':splitId/add-expensive', ':splitId/add-expense'])
+  @ApiOperation({ summary: 'Add new expense items to split' })
+  @ApiResponse({ status: 201, description: 'Expenses added' })
   async addExpense(
     @CurrentUser('id') userId: number,
     @Param('splitId', ParseIntPipe) splitId: number,
@@ -124,6 +145,8 @@ export class SplitsController {
   }
 
   @Post(':splitId/:expenseId/add-members')
+  @ApiOperation({ summary: 'Add members to existing expense' })
+  @ApiResponse({ status: 201, description: 'Members added' })
   async addMembersToExpense(
     @CurrentUser('id') userId: number,
     @Param('splitId', ParseIntPipe) splitId: number,
@@ -142,6 +165,8 @@ export class SplitsController {
   }
 
   @Get(':splitId/expense-requests')
+  @ApiOperation({ summary: 'Get payment requests for split' })
+  @ApiResponse({ status: 200, description: 'Paginated expense requests' })
   async getExpenseRequests(
     @CurrentUser('id') userId: number,
     @Param('splitId', ParseIntPipe) splitId: number,
@@ -151,6 +176,8 @@ export class SplitsController {
   }
 
   @Post(':splitId/:expenseId/expense-request')
+  @ApiOperation({ summary: 'Create payment confirmation request (debtor)' })
+  @ApiResponse({ status: 201, description: 'Expense request created' })
   async createExpenseRequest(
     @CurrentUser('id') userId: number,
     @Param('splitId', ParseIntPipe) splitId: number,
@@ -166,6 +193,8 @@ export class SplitsController {
   }
 
   @Delete(':splitId/:expenseId/:expenseRequestId/decline')
+  @ApiOperation({ summary: 'Decline payment request (spender only)' })
+  @ApiResponse({ status: 200, description: 'Request declined' })
   async declineExpenseRequest(
     @CurrentUser('id') userId: number,
     @Param('splitId', ParseIntPipe) splitId: number,
@@ -181,6 +210,8 @@ export class SplitsController {
   }
 
   @Post(':splitId/:expenseId/:expenseRequestId/accept')
+  @ApiOperation({ summary: 'Accept payment request (spender only)' })
+  @ApiResponse({ status: 200, description: 'Request accepted and payment applied' })
   async acceptExpenseRequest(
     @CurrentUser('id') userId: number,
     @Param('splitId', ParseIntPipe) splitId: number,
@@ -196,6 +227,8 @@ export class SplitsController {
   }
 
   @Delete(':splitId/:expenseId/remove-members')
+  @ApiOperation({ summary: 'Remove members from expense (spender only)' })
+  @ApiResponse({ status: 200, description: 'Members removed from expense' })
   async removeMembersFromExpense(
     @CurrentUser('id') userId: number,
     @Param('splitId', ParseIntPipe) splitId: number,
@@ -214,6 +247,8 @@ export class SplitsController {
   }
 
   @Delete(':splitId/:expenseId/:expenseRequestId')
+  @ApiOperation({ summary: 'Cancel payment request (requester debtor only)' })
+  @ApiResponse({ status: 200, description: 'Request canceled' })
   async cancelExpenseRequest(
     @CurrentUser('id') userId: number,
     @Param('splitId', ParseIntPipe) splitId: number,
@@ -229,6 +264,8 @@ export class SplitsController {
   }
 
   @Delete(':splitId/:expenseId')
+  @ApiOperation({ summary: 'Delete expense item from split (spender only)' })
+  @ApiResponse({ status: 200, description: 'Expense deleted' })
   async deleteExpense(
     @CurrentUser('id') userId: number,
     @Param('splitId', ParseIntPipe) splitId: number,

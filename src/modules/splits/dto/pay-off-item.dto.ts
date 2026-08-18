@@ -1,3 +1,4 @@
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Transform, TransformFnParams, Type } from 'class-transformer';
 import {
   IsInt,
@@ -12,16 +13,19 @@ import {
 import { SPLIT_LIMITS } from '../constants/splits.constants';
 
 export class PayOffItemDto {
+  @ApiProperty({ description: 'Debtor user ID', example: 2 })
   @Type(() => Number)
   @IsInt()
   @Min(1)
   user: number;
 
+  @ApiProperty({ description: 'Payment amount', example: 15.0 })
   @Type(() => Number)
   @IsNumber()
   @Min(0.01)
   amount: number;
 
+  @ApiPropertyOptional({ description: 'Optional payment note/message' })
   @IsOptional()
   @IsString()
   @Transform(({ value }: TransformFnParams): string | undefined =>
